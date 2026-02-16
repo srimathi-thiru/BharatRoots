@@ -1,23 +1,35 @@
 import React, { useState } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function AddHeritage() {
+
+  const [imageUrl, setImageUrl] = useState("");
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Monument");
   const [region, setRegion] = useState("");
   const [description, setDescription] = useState("");
 
+  const { userRole } = useContext(AuthContext);
+
+if (userRole !== "ADMIN") {
+  return <h2>Access Denied. Admin only.</h2>;
+}
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       await addDoc(collection(db, "heritage"), {
-        title: title,
-        category: category,
-        region: region,
-        description: description,
+        title,
+        category,
+        region,
+        description,
+        imageUrl,
         createdAt: new Date()
       });
 
@@ -74,6 +86,16 @@ function AddHeritage() {
         />
 
         <br /><br />
+
+        <input
+          type="text"
+          placeholder="Heritage Image URL"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg"
+          required
+        />
+
 
         <button type="submit">Add Heritage</button>
 

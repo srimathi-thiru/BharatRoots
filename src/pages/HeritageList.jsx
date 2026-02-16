@@ -23,23 +23,53 @@ function HeritageList() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>BharatRoots Heritage</h1>
 
-      {heritageList.map(item => (
-        <div key={item.id} style={{
-          border: "1px solid gray",
-          margin: "10px",
-          padding: "10px"
-        }}>
-          <h3>{item.title}</h3>
-          <p>Category: {item.category}</p>
-          <p>Region: {item.region}</p>
-          <p>{item.description}</p>
-        </div>
-      ))}
+    <div>
+
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">
+        Cultural Heritage
+      </h2>
+
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {heritageList.map(item => (
+
+          <div
+            key={item.id}
+            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+          >
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              className="w-full h-48 object-cover rounded-lg mb-3"
+            />
+
+
+            <h3 className="text-xl font-semibold text-blue-600 mb-2">
+              {item.title}
+            </h3>
+
+            <p className="text-sm text-gray-500 mb-2">
+              Category: {item.category}
+            </p>
+
+            <p className="text-sm text-gray-500 mb-2">
+              Region: {item.region}
+            </p>
+
+            <p className="text-gray-700">
+              {item.description}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
 
     </div>
+
   );
 }
 

@@ -26,37 +26,48 @@ function Login() {
   };
 
   return (
-    <div>
 
-      <h2>Login - BharatRoots</h2>
+    <div className="flex justify-center items-center min-h-[70vh]">
 
-      <form onSubmit={handleLogin}>
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Login to BharatRoots
+        </h2>
 
-        <br /><br />
+        <form onSubmit={handleLogin} className="space-y-4">
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
 
-        <br /><br />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
 
-        <button type="submit">Login</button>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+          >
+            Login
+          </button>
 
-      </form>
+        </form>
+
+      </div>
 
     </div>
+
   );
 }
 

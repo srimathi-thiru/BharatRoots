@@ -1,42 +1,124 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
+import { signOut } from "firebase/auth";
+import { auth } from "./firebaseConfig";
+
 
 import Register from "./pages/Register";
 import AddHeritage from "./pages/AddHeritage";
 import HeritageList from "./pages/HeritageList";
 import Login from "./pages/Login";
+import RegisterArtisan from "./pages/RegisterArtisan";
+import AddProduct from "./pages/AddProduct";
+import ProductList from "./pages/ProductList";
+import VerifyProduct from "./pages/VerifyProduct";
+import Dashboard from "./pages/Dashboard";
+import Search from "./pages/Search";
+import AdminArtisanPanel from "./pages/AdminArtisanPanel";
+import ArtisanProfile from "./pages/ArtisanProfile";
+
 
 function App() {
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+
+  const { currentUser, userRole } = useContext(AuthContext);
 
   return (
     <Router>
 
-      <div style={{ padding: "20px" }}>
+      {/* Full Page Wrapper */}
+      <div className="min-h-screen w-full bg-gray-100">
 
-        <h1>BharatRoots</h1>
+        {/* Navbar */}
+        <nav className="bg-gray-900 text-white px-8 py-4 shadow-lg">
 
-        {/* Navigation */}
-        <nav>
-          <Link to="/">View Heritage</Link> | {" "}
-          <Link to="/register">Register</Link> | {" "}
-          <Link to="/login">Login</Link> | {" "}
-          <Link to="/add-heritage">Add Heritage</Link>
-        </nav>  
-        <hr />
+          <div className="flex justify-between items-center">
 
-        {/* Routes */}
-        <Routes>
-          <Route path="/login" element={<Login />} />
+            <h1 className="text-3xl font-bold text-blue-400">
+              BharatRoots
+            </h1>
 
-          <Route path="/" element={<HeritageList />} />
+            <div className="space-x-6">
+              {userRole === "ADMIN" && (
+                <Link to="/admin-artisans">Admin Panel</Link>
+              )}
 
-          <Route path="/register" element={<Register />} />
+              <Link to="/search">Search</Link>
 
-          <Route path="/add-heritage" element={<AddHeritage />} />
+              <Link to="/" className="hover:text-blue-400">Heritage</Link>
 
-        </Routes>
+              <Link to="/products" className="hover:text-blue-400">Marketplace</Link>
+
+              <Link to="/verify" className="hover:text-blue-400">Verify</Link>
+
+              <Link to="/register-artisan" className="hover:text-blue-400">Artisan</Link>
+
+              {userRole === "ADMIN" && (
+                <Link to="/add-heritage" className="hover:text-blue-400">
+                  Add Heritage
+                </Link>
+              )}
+
+              <Link to="/add-product" className="hover:text-blue-400">
+                Add Product
+              </Link>
+
+              {currentUser ? (
+                  <button
+                    onClick={handleLogout}
+                    className="hover:text-red-400"
+                  >
+                    Logout
+                  </button>
+              ) : (
+                  <Link to="/login" className="hover:text-blue-400">
+                    Login
+                  </Link>
+              )}
+
+              <Link to="/dashboard" className="hover:text-blue-400">
+                Dashboard
+              </Link>
+
+
+
+            </div>
+
+          </div>
+
+          {/* Logged-in user info */}
+          {currentUser && (
+            <div className="text-sm text-gray-300 mt-2">
+              Logged in as: {currentUser.email} | Role: {userRole}
+            </div>
+          )}
+
+        </nav>
+
+        {/* Page Content */}
+        <div className="max-w-6xl mx-auto p-6">
+
+          <Routes>
+
+            <Route path="/" element={<HeritageList />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/add-heritage" element={<AddHeritage />} />
+            <Route path="/register-artisan" element={<RegisterArtisan />} />
+            <Route path="/add-product" element={<AddProduct />} />
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/verify" element={<VerifyProduct />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
+            <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
+          </Routes>
+
+        </div>
 
       </div>
 
