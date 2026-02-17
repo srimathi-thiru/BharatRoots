@@ -17,6 +17,8 @@ import Dashboard from "./pages/Dashboard";
 import Search from "./pages/Search";
 import AdminArtisanPanel from "./pages/AdminArtisanPanel";
 import ArtisanProfile from "./pages/ArtisanProfile";
+import Verify from "./pages/Verify";
+import FloatingChatbot from "./components/FloatingChatbot";
 
 
 function App() {
@@ -84,7 +86,7 @@ function App() {
                 Dashboard
               </Link>
 
-
+              <Link to="/verify">Verify</Link>
 
             </div>
 
@@ -116,7 +118,10 @@ function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
             <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
+            <Route path="/verify" element={<Verify />} />
           </Routes>
+          <FloatingChatbot />
+
 
         </div>
 
