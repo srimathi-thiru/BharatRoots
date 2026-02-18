@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   const [currentUser, setCurrentUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true); // important
 
   useEffect(() => {
 
@@ -18,12 +19,20 @@ export const AuthProvider = ({ children }) => {
 
         setCurrentUser(user);
 
-        // fetch role from Firestore
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+        try {
 
-        if (docSnap.exists()) {
-          setUserRole(docSnap.data().role);
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setUserRole(docSnap.data().role);
+          } else {
+            setUserRole("USER"); // fallback role
+          }
+
+        } catch (error) {
+          console.error("Error fetching role:", error);
+          setUserRole("USER");
         }
 
       } else {
@@ -33,6 +42,8 @@ export const AuthProvider = ({ children }) => {
 
       }
 
+      setLoading(false);
+
     });
 
     return () => unsubscribe();
@@ -40,8 +51,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, userRole }}>
+    <AuthContext.Provider value={{
+      currentUser,
+      userRole,
+      loading
+    }}>
       {children}
     </AuthContext.Provider>
   );
+
 };

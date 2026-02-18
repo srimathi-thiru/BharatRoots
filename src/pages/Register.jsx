@@ -1,100 +1,136 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+
+import {
+  createUserWithEmailAndPassword
+} from "firebase/auth";
+
+import {
+  doc,
+  setDoc,
+  serverTimestamp
+} from "firebase/firestore";
+
+import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
 
-  const [name, setName] = useState("");
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
-  const [region, setRegion] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e) => {
+
     e.preventDefault();
 
+    setError("");
+    setLoading(true);
+
     try {
-      // Create user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+
+      // Create Firebase Auth user
+      const userCredential =
+        await createUserWithEmailAndPassword(auth, email, password);
 
       const user = userCredential.user;
 
-      // Store additional data in Firestore
+      // Save role in Firestore
       await setDoc(doc(db, "users", user.uid), {
-        name: name,
+
         email: email,
         role: role,
-        region: region,
-        createdAt: new Date()
+        createdAt: serverTimestamp()
+
       });
 
-      alert("User registered successfully ✅");
+      alert("Registration successful");
 
-    } catch (error) {
-      alert(error.message);
+      navigate("/dashboard");
+
     }
+    catch (err) {
+
+      setError(err.message);
+
+    }
+
+    setLoading(false);
+
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Register - BharatRoots</h2>
 
-      <form onSubmit={handleRegister}>
+    <div className="flex justify-center items-center min-h-screen">
 
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <br /><br />
+      <form
+        onSubmit={handleRegister}
+        className="bg-white p-8 rounded-lg shadow-md w-96"
+      >
+
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Register
+        </h2>
+
+        {error && (
+          <p className="text-red-500 mb-3">
+            {error}
+          </p>
+        )}
 
         <input
           type="email"
           placeholder="Email"
+          className="w-full p-2 border mb-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <br /><br />
 
         <input
           type="password"
           placeholder="Password"
+          className="w-full p-2 border mb-3"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <br /><br />
 
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
+        {/* Role selection */}
+        <select
+          className="w-full p-2 border mb-3"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
           <option value="USER">User</option>
           <option value="ARTISAN">Artisan</option>
-          <option value="ADMIN">Admin</option>
         </select>
 
-        <br /><br />
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2"
+          disabled={loading}
+        >
+          {loading ? "Registering..." : "Register"}
+        </button>
 
-        <input
-          type="text"
-          placeholder="Region"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-        />
-
-        <br /><br />
-
-        <button type="submit">Register</button>
+        <p className="mt-4 text-center">
+          Already have account?
+          <Link to="/login" className="text-blue-600 ml-2">
+            Login
+          </Link>
+        </p>
 
       </form>
+
     </div>
+
   );
+
 }
 
 export default Register;

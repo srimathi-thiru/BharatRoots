@@ -1,134 +1,270 @@
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useLocation
+} from "react-router-dom";
+
 import { AuthContext } from "./context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebaseConfig";
 
-
-import Register from "./pages/Register";
-import AddHeritage from "./pages/AddHeritage";
-import HeritageList from "./pages/HeritageList";
-import Login from "./pages/Login";
-import RegisterArtisan from "./pages/RegisterArtisan";
-import AddProduct from "./pages/AddProduct";
-import ProductList from "./pages/ProductList";
-import VerifyProduct from "./pages/VerifyProduct";
-import Dashboard from "./pages/Dashboard";
-import Search from "./pages/Search";
-import AdminArtisanPanel from "./pages/AdminArtisanPanel";
-import ArtisanProfile from "./pages/ArtisanProfile";
-import Verify from "./pages/Verify";
+import ProtectedRoute from "./components/ProtectedRoute";
 import FloatingChatbot from "./components/FloatingChatbot";
 
+/* Pages */
+import LandingPage from "./pages/LandingPage";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
-  const handleLogout = async () => {
-    await signOut(auth);
-  };
+import HeritageList from "./pages/HeritageList";
+import AddHeritage from "./pages/AddHeritage";
 
+import RegisterArtisan from "./pages/RegisterArtisan";
+import ArtisanProfile from "./pages/ArtisanProfile";
+
+import AddProduct from "./pages/AddProduct";
+import ProductList from "./pages/ProductList";
+
+import Verify from "./pages/Verify";
+import AdminArtisanPanel from "./pages/AdminArtisanPanel";
+import Search from "./pages/Search";
+
+
+/* Navbar Component */
+function Navbar() {
 
   const { currentUser, userRole } = useContext(AuthContext);
+  const location = useLocation();
+
+  if (!currentUser) return null;
 
   return (
-    <Router>
+    <nav className="bg-gray-900 text-white px-8 py-4 shadow-lg">
 
-      {/* Full Page Wrapper */}
-      <div className="min-h-screen w-full bg-gray-100">
+      <div className="flex justify-between items-center">
 
-        {/* Navbar */}
-        <nav className="bg-gray-900 text-white px-8 py-4 shadow-lg">
+        <h1 className="text-3xl font-bold text-blue-400">
+          BharatRoots
+        </h1>
 
-          <div className="flex justify-between items-center">
+        <div className="space-x-6">
 
-            <h1 className="text-3xl font-bold text-blue-400">
-              BharatRoots
-            </h1>
+          <Link to="/dashboard">Dashboard</Link>
 
-            <div className="space-x-6">
-              {userRole === "ADMIN" && (
-                <Link to="/admin-artisans">Admin Panel</Link>
-              )}
+          <Link to="/heritage">Heritage</Link>
 
-              <Link to="/search">Search</Link>
+          <Link to="/products">Marketplace</Link>
 
-              <Link to="/" className="hover:text-blue-400">Heritage</Link>
+          <Link to="/search">Search</Link>
 
-              <Link to="/products" className="hover:text-blue-400">Marketplace</Link>
-
-              <Link to="/verify" className="hover:text-blue-400">Verify</Link>
-
-              <Link to="/register-artisan" className="hover:text-blue-400">Artisan</Link>
-
-              {userRole === "ADMIN" && (
-                <Link to="/add-heritage" className="hover:text-blue-400">
-                  Add Heritage
-                </Link>
-              )}
-
-              <Link to="/add-product" className="hover:text-blue-400">
-                Add Product
-              </Link>
-
-              {currentUser ? (
-                  <button
-                    onClick={handleLogout}
-                    className="hover:text-red-400"
-                  >
-                    Logout
-                  </button>
-              ) : (
-                  <Link to="/login" className="hover:text-blue-400">
-                    Login
-                  </Link>
-              )}
-
-              <Link to="/dashboard" className="hover:text-blue-400">
-                Dashboard
-              </Link>
-
-              <Link to="/verify">Verify</Link>
-
-            </div>
-
-          </div>
-
-          {/* Logged-in user info */}
-          {currentUser && (
-            <div className="text-sm text-gray-300 mt-2">
-              Logged in as: {currentUser.email} | Role: {userRole}
-            </div>
+          {userRole === "USER" && (
+            <Link to="/register-artisan">
+              Become Artisan
+            </Link>
           )}
 
-        </nav>
+          {(userRole === "ARTISAN" || userRole === "ADMIN") && (
+            <Link to="/add-product">
+              Add Product
+            </Link>
+          )}
 
-        {/* Page Content */}
-        <div className="max-w-6xl mx-auto p-6">
+          {userRole === "ADMIN" && (
+            <>
+              <Link to="/add-heritage">
+                Add Heritage
+              </Link>
 
-          <Routes>
+              <Link to="/verify">
+                Verify
+              </Link>
 
-            <Route path="/" element={<HeritageList />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/add-heritage" element={<AddHeritage />} />
-            <Route path="/register-artisan" element={<RegisterArtisan />} />
-            <Route path="/add-product" element={<AddProduct />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/verify" element={<VerifyProduct />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
-            <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
-            <Route path="/verify" element={<Verify />} />
-          </Routes>
-          <FloatingChatbot />
+              <Link to="/admin-artisans">
+                Admin Panel
+              </Link>
+            </>
+          )}
 
+          <button
+            onClick={() => signOut(auth)}
+            className="text-red-400"
+          >
+            Logout
+          </button>
 
         </div>
 
       </div>
 
-    </Router>
+      <div className="text-sm text-gray-300 mt-2">
+        Logged in as: {currentUser.email} | Role: {userRole}
+      </div>
+
+    </nav>
   );
+}
+
+
+/* Layout Controller */
+function Layout() {
+
+  const { currentUser } = useContext(AuthContext);
+  const location = useLocation();
+
+  const isLandingPage = location.pathname === "/";
+
+  return (
+
+    <>
+      {!isLandingPage && <Navbar />}
+
+      {/* FULL WIDTH for Landing Page */}
+      {isLandingPage ? (
+
+        <LandingPage />
+
+      ) : (
+
+        /* Container Width for App Pages */
+        <div className="max-w-6xl mx-auto p-6">
+
+          <Routes>
+
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Protected Routes */}
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["USER","ARTISAN","ADMIN"]}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/heritage"
+              element={
+                <ProtectedRoute allowedRoles={["USER","ARTISAN","ADMIN"]}>
+                  <HeritageList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute allowedRoles={["USER","ARTISAN","ADMIN"]}>
+                  <ProductList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute allowedRoles={["USER","ARTISAN","ADMIN"]}>
+                  <Search />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/register-artisan"
+              element={
+                <ProtectedRoute allowedRoles={["USER"]}>
+                  <RegisterArtisan />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/artisan/:artisanId"
+              element={
+                <ProtectedRoute allowedRoles={["USER","ARTISAN","ADMIN"]}>
+                  <ArtisanProfile />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/add-product"
+              element={
+                <ProtectedRoute allowedRoles={["ARTISAN","ADMIN"]}>
+                  <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/add-heritage"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AddHeritage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/verify"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <Verify />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin-artisans"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminArtisanPanel />
+                </ProtectedRoute>
+              }
+            />
+
+          </Routes>
+
+          {currentUser && <FloatingChatbot />}
+
+        </div>
+
+      )}
+
+    </>
+
+  );
+}
+
+
+function App() {
+
+  return (
+
+    <Router>
+
+      <Routes>
+
+        {/* Landing Page */}
+        <Route path="/" element={<Layout />} />
+
+        {/* All other routes */}
+        <Route path="/*" element={<Layout />} />
+
+      </Routes>
+
+    </Router>
+
+  );
+
 }
 
 export default App;
