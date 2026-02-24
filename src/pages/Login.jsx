@@ -1,62 +1,56 @@
-import React, { useState } from "react";
-
+import React, { useState, useContext } from "react";
 import { auth } from "../firebaseConfig";
-
-import {
-  signInWithEmailAndPassword
-} from "firebase/auth";
-
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-function Login() {
-
+function Login({ expectedRole }) {
   const navigate = useNavigate();
+  const { userRole } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-
     e.preventDefault();
-
     setError("");
     setLoading(true);
 
     try {
-
       await signInWithEmailAndPassword(auth, email, password);
 
-      navigate("/dashboard");
+      // ⏳ Give AuthContext a moment to load role
+      setTimeout(async () => {
+        if (expectedRole && userRole !== expectedRole) {
+          await signOut(auth);
+          setError(`This login is only for ${expectedRole}s`);
+          setLoading(false);
+          return;
+        }
 
-    }
-    catch (err) {
+        navigate("/dashboard");
+      }, 500);
 
+    } catch (err) {
       setError("Invalid email or password");
-
+      setLoading(false);
     }
-
-    setLoading(false);
-
   };
 
   return (
-
     <div className="flex justify-center items-center min-h-screen">
-
       <form
         onSubmit={handleLogin}
         className="bg-white p-8 rounded-lg shadow-md w-96"
       >
-
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Login
+          {expectedRole === "ARTISAN" ? "Artisan Login" : "User Login"}
         </h2>
 
         {error && (
-          <p className="text-red-500 mb-3">
+          <p className="text-red-500 mb-3 text-center">
             {error}
           </p>
         )}
@@ -87,19 +81,17 @@ function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <p className="mt-4 text-center">
-          Don't have account?
-          <Link to="/register" className="text-blue-600 ml-2">
-            Register
-          </Link>
-        </p>
-
+        {!expectedRole && (
+          <p className="mt-4 text-center">
+            Don't have an account?
+            <Link to="/register" className="text-blue-600 ml-2">
+              Register
+            </Link>
+          </p>
+        )}
       </form>
-
     </div>
-
   );
-
 }
 
 export default Login;
