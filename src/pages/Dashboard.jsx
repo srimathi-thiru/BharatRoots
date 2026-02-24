@@ -1,150 +1,172 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  FaBell,
+  FaMoon,
+  FaSun,
+  FaUserTie,
+  FaStore,
+} from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-function Dashboard() {
+/* Dummy Analytics Data */
+const analyticsData = [
+  { name: "Mon", value: 30 },
+  { name: "Tue", value: 45 },
+  { name: "Wed", value: 60 },
+  { name: "Thu", value: 50 },
+  { name: "Fri", value: 80 },
+];
 
-  const { currentUser, userRole, loading } = useContext(AuthContext);
+const Dashboard = () => {
+  const { userRole } = useContext(AuthContext);
+  const [dark, setDark] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (loading) {
-    return (
-      <div className="text-center mt-20 text-lg">
-        Loading dashboard...
-      </div>
-    );
-  }
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1500); // Skeleton loader
+  }, []);
 
   return (
+    <div className={dark ? "dark" : ""}>
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition">
+        
+        {/* TOP BAR */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
 
-    <div className="max-w-5xl mx-auto mt-10">
+          <div className="flex items-center gap-4">
+            <button className="relative">
+              <FaBell size={20} />
+              <span className="absolute -top-2 -right-2 bg-red-500 text-xs px-1 rounded">
+                3
+              </span>
+            </button>
 
-      <h1 className="text-3xl font-bold mb-4">
-        Welcome to BharatRoots
-      </h1>
-
-      <p className="mb-6 text-gray-600">
-        Logged in as: <strong>{currentUser?.email}</strong>
-      </p>
-
-      <p className="mb-6 text-gray-600">
-        Role: <strong>{userRole}</strong>
-      </p>
-
-
-      {/* USER DASHBOARD */}
-
-      {userRole === "USER" && (
-
-        <div className="grid grid-cols-2 gap-4">
-
-          <DashboardCard
-            title="Explore Heritage"
-            link="/heritage"
-          />
-
-          <DashboardCard
-            title="Browse Marketplace"
-            link="/products"
-          />
-
-          <DashboardCard
-            title="Search"
-            link="/search"
-          />
-
-          <DashboardCard
-            title="Become Artisan"
-            link="/register-artisan"
-          />
-
+            <button
+              onClick={() => setDark(!dark)}
+              className="p-2 rounded bg-gray-200 dark:bg-gray-700"
+            >
+              {dark ? <FaSun /> : <FaMoon />}
+            </button>
+          </div>
         </div>
 
-      )}
+        {/* LOADING SKELETON */}
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-10"
+          >
+            {/* WELCOME CARD */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="bg-gradient-to-r from-indigo-600 to-blue-500 p-6 rounded-xl shadow-lg"
+            >
+              <h2 className="text-2xl font-bold">
+                Welcome to BharatRoots 🌏
+              </h2>
+              <p className="opacity-90 mt-1">
+                Role: <b>{userRole}</b>
+              </p>
+            </motion.div>
 
+            {/* ANALYTICS */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+              <h3 className="text-lg font-semibold mb-4">
+                Platform Activity
+              </h3>
 
-      {/* ARTISAN DASHBOARD */}
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={analyticsData}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#6366f1"
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
 
-      {userRole === "ARTISAN" && (
+            {/* ARTISAN PREVIEW */}
+            {userRole !== "USER" && (
+              <motion.div
+                whileHover={{ y: -5 }}
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow"
+              >
+                <h3 className="text-lg font-semibold mb-4">
+                  Artisan Profile Preview
+                </h3>
 
-        <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-4">
+                  <FaUserTie size={40} className="text-indigo-500" />
+                  <div>
+                    <p className="font-bold">Ravi Kumar</p>
+                    <p className="text-sm opacity-70">
+                      Handloom Weaver • Tamil Nadu
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-          <DashboardCard
-            title="Add Product"
-            link="/add-product"
-          />
+            {/* NOTIFICATIONS */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+              <h3 className="text-lg font-semibold mb-4">
+                Recent Notifications
+              </h3>
 
-          <DashboardCard
-            title="View Marketplace"
-            link="/products"
-          />
+              <ul className="space-y-3 text-sm">
+                <li>✅ Product verified successfully</li>
+                <li>🧵 New artisan joined the platform</li>
+                <li>📦 New product added</li>
+              </ul>
+            </div>
 
-          <DashboardCard
-            title="Search"
-            link="/search"
-          />
-
-        </div>
-
-      )}
-
-
-      {/* ADMIN DASHBOARD */}
-
-      {userRole === "ADMIN" && (
-
-        <div className="grid grid-cols-2 gap-4">
-
-          <DashboardCard
-            title="Admin Panel"
-            link="/admin-artisans"
-          />
-
-          <DashboardCard
-            title="Add Heritage"
-            link="/add-heritage"
-          />
-
-          <DashboardCard
-            title="Verify Products"
-            link="/verify"
-          />
-
-          <DashboardCard
-            title="Marketplace"
-            link="/products"
-          />
-
-        </div>
-
-      )}
-
+            {/* MARKETPLACE CARD */}
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              className="bg-gradient-to-br from-orange-400 to-yellow-400 p-6 rounded-xl shadow text-black"
+            >
+              <div className="flex items-center gap-4">
+                <FaStore size={35} />
+                <div>
+                  <h3 className="text-xl font-bold">Marketplace Live</h3>
+                  <p className="text-sm">
+                    Discover verified Swadeshi products
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </div>
     </div>
-
   );
+};
 
-}
-
-
-// Dashboard Card Component
-
-function DashboardCard({ title, link }) {
-
-  return (
-
-    <Link to={link}>
-
-      <div className="bg-white shadow-md p-6 rounded-lg hover:shadow-lg hover:bg-blue-50 cursor-pointer">
-
-        <h2 className="text-xl font-semibold">
-          {title}
-        </h2>
-
-      </div>
-
-    </Link>
-
-  );
-
-}
+/* 🔹 Skeleton Loader */
+const Skeleton = () => (
+  <div className="space-y-6 animate-pulse">
+    <div className="h-28 bg-gray-300 dark:bg-gray-700 rounded-xl"></div>
+    <div className="h-64 bg-gray-300 dark:bg-gray-700 rounded-xl"></div>
+    <div className="h-32 bg-gray-300 dark:bg-gray-700 rounded-xl"></div>
+  </div>
+);
 
 export default Dashboard;
