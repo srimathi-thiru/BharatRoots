@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 
 function UserLogin() {
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState(""); // email or mobile
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,13 +17,23 @@ function UserLogin() {
     setLoading(true);
 
     try {
-      // If mobile number entered → convert to email format
       const email = identifier.includes("@")
         ? identifier
         : `${identifier}@bharatroots.com`;
 
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard");
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 🔥 Get role from Firestore
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists() && docSnap.data().role === "user") {
+        navigate("/user-dashboard");
+      } else {
+        setError("Access denied: Not a User account");
+      }
+
     } catch (err) {
       setError("Invalid credentials. Please try again.");
     }
@@ -31,11 +42,8 @@ function UserLogin() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow-md w-96"
-      >
+    <div className="flex justify-center items-center min-h-screen bg-[#F0F7F4]">
+      <form onSubmit={handleLogin} className="bg-white p-8 rounded-xl shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">
           User Login
         </h2>
@@ -74,10 +82,7 @@ function UserLogin() {
 
         <p className="mt-4 text-center text-sm">
           New user?
-          <Link
-            to="/register/user"
-            className="text-indigo-600 ml-2 font-medium"
-          >
+          <Link to="/register/user" className="text-indigo-600 ml-2 font-medium">
             Register New
           </Link>
         </p>

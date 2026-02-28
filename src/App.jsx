@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,7 +11,9 @@ import {
 
 import { AuthContext } from "./context/AuthContext";
 import { signOut } from "firebase/auth";
-import { auth } from "./firebaseConfig";
+import { auth, db } from "./firebaseConfig";
+
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 import FloatingChatbot from "./components/FloatingChatbot";
 
@@ -20,20 +22,45 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import UserLogin from "./pages/UserLogin";
 import UserRegister from "./pages/UserRegister";
+import RegisterArtisan from "./pages/RegisterArtisan";
+import ArtisanLogin from "./pages/ArtisanLogin";   // ✅ added
 import HeritageList from "./pages/HeritageList";
 import AddHeritage from "./pages/AddHeritage";
-import RegisterArtisan from "./pages/RegisterArtisan";
 import ArtisanProfile from "./pages/ArtisanProfile";
 import AddProduct from "./pages/AddProduct";
 import ProductList from "./pages/ProductList";
 import Verify from "./pages/Verify";
 import AdminArtisanPanel from "./pages/AdminArtisanPanel";
 import Search from "./pages/Search";
+import HeritageDetail from "./pages/HeritageDetail";
+import ProductDetail from "./pages/ProductDetail";
+import MyOrders from "./pages/MyOrders";
 
 /* NAVBAR */
 function Navbar() {
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const [isArtisan, setIsArtisan] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      checkIfArtisan();
+    }
+  }, [currentUser]);
+
+  const checkIfArtisan = async () => {
+    const q = query(
+      collection(db, "artisans"),
+      where("userId", "==", currentUser.uid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      setIsArtisan(true);
+    }
+  };
 
   if (!currentUser) return null;
 
@@ -50,7 +77,13 @@ function Navbar() {
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/heritage">Heritage</Link>
           <Link to="/products">Marketplace</Link>
+
+          {isArtisan && (
+            <Link to="/my-orders">My Orders</Link>
+          )}
+
           <Link to="/search">Search</Link>
+
           <button onClick={handleLogout} className="text-red-400">
             Logout
           </button>
@@ -66,11 +99,13 @@ function Layout() {
   const location = useLocation();
 
   const isLanding = location.pathname === "/";
+
   const isAuthPage =
     location.pathname === "/login/user" ||
-    location.pathname === "/register/user";
+    location.pathname === "/register/user" ||
+    location.pathname === "/register-artisan" ||
+    location.pathname === "/login/artisan";   // ✅ added
 
-  /* 🔥 SINGLE GUARD (VERY IMPORTANT) */
   if (!currentUser && !isLanding && !isAuthPage) {
     return <Navigate to="/login/user" replace />;
   }
@@ -81,22 +116,28 @@ function Layout() {
 
       <div className="max-w-6xl mx-auto p-6">
         <Routes>
+
           {/* PUBLIC */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login/user" element={<UserLogin />} />
           <Route path="/register/user" element={<UserRegister />} />
+          <Route path="/register-artisan" element={<RegisterArtisan />} />
+          <Route path="/login/artisan" element={<ArtisanLogin />} />
 
-          {/* PROTECTED (simple check already done above) */}
+          {/* PROTECTED */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/heritage" element={<HeritageList />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/register-artisan" element={<RegisterArtisan />} />
           <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/add-heritage" element={<AddHeritage />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
+          <Route path="/heritage/:id" element={<HeritageDetail />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/my-orders" element={<MyOrders />} />
+
         </Routes>
 
         {currentUser && <FloatingChatbot />}

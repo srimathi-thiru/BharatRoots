@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 
 function UserRegister() {
@@ -16,19 +17,33 @@ function UserRegister() {
 
     try {
       const finalEmail = email || `${mobile}@bharatroots.com`;
-      await createUserWithEmailAndPassword(auth, finalEmail, password);
-      navigate("/dashboard");
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        finalEmail,
+        password
+      );
+
+      const user = userCredential.user;
+
+      // 🔥 Store role in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        role: "user",
+        email: finalEmail,
+        mobile: mobile || "",
+        createdAt: new Date()
+      });
+
+      navigate("/user-dashboard");
+
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <form
-        onSubmit={handleRegister}
-        className="bg-white p-8 rounded-xl shadow-md w-96"
-      >
+    <div className="flex justify-center items-center min-h-screen bg-[#F0F7F4]">
+      <form onSubmit={handleRegister} className="bg-white p-8 rounded-xl shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">
           User Registration
         </h2>
@@ -74,10 +89,7 @@ function UserRegister() {
 
         <p className="mt-4 text-center text-sm">
           Already have an account?
-          <Link
-            to="/login/user"
-            className="text-green-600 ml-2 font-medium"
-          >
+          <Link to="/login/user" className="text-green-600 ml-2 font-medium">
             Login
           </Link>
         </p>

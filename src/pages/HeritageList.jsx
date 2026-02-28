@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 function HeritageList() {
 
@@ -34,16 +35,13 @@ function HeritageList() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {heritageList.map(item => (
-
-          <div
-            key={item.id}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
-          >
-            <img
-              src={item.imageUrl}
-              alt={item.title}
-              className="w-full h-48 object-cover rounded-lg mb-3"
-            />
+        <Link key={item.id} to={`/heritage/${item.id}`}>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-48 object-cover rounded-lg mb-3"
+                  />
 
 
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
@@ -62,9 +60,9 @@ function HeritageList() {
               {item.description}
             </p>
 
-          </div>
-
-        ))}
+           </div>
+          </Link>
+          ))}
 
       </div>
 

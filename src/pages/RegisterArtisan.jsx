@@ -1,11 +1,15 @@
-import React, { useState, useContext } from "react";
-import { db } from "../firebaseConfig";
+import React, { useState } from "react";
+import { auth, db } from "../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
-import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function RegisterArtisan() {
 
-  const { currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [name, setName] = useState("");
   const [region, setRegion] = useState("");
@@ -13,87 +17,99 @@ function RegisterArtisan() {
   const [contact, setContact] = useState("");
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
 
-      await addDoc(collection(db, "artisans"), {
-        userId: currentUser.uid,
-        name: name,
-        region: region,
-        specialization: specialization,
-        contact: contact,
+      // STEP 1 — Create Auth User
+      const userCredential =
+        await createUserWithEmailAndPassword(auth, email, password);
+
+      const user = userCredential.user;
+
+      console.log("Auth created:", user.uid);
+
+      // STEP 2 — Create Artisan Profile
+      const docRef = await addDoc(collection(db, "artisans"), {
+        userId: user.uid,
+        name,
+        region,
+        specialization,
+        contact,
         verified: false,
         createdAt: new Date()
       });
 
-      alert("Artisan registered successfully ✅");
+      console.log("Artisan profile created:", docRef.id);
 
-      setName("");
-      setRegion("");
-      setSpecialization("");
-      setContact("");
+      alert("Artisan registered successfully ✅");
+      navigate("/dashboard");
 
     } catch (error) {
-
+      console.error("Registration error:", error);
       alert(error.message);
-
     }
-
   };
 
   return (
     <div>
-
       <h2>Register as Artisan</h2>
 
       <form onSubmit={handleSubmit}>
 
         <input
-          type="text"
-          placeholder="Artisan Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          type="email"
+          placeholder="Email"
+          onChange={(e)=>setEmail(e.target.value)}
           required
         />
+        <br/><br/>
 
-        <br /><br />
+        <input
+          type="password"
+          placeholder="Password"
+          onChange={(e)=>setPassword(e.target.value)}
+          required
+        />
+        <br/><br/>
+
+        <input
+          type="text"
+          placeholder="Artisan Name"
+          onChange={(e)=>setName(e.target.value)}
+          required
+        />
+        <br/><br/>
 
         <input
           type="text"
           placeholder="Region"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
+          onChange={(e)=>setRegion(e.target.value)}
           required
         />
-
-        <br /><br />
+        <br/><br/>
 
         <input
           type="text"
-          placeholder="Specialization (e.g., Handloom, Pottery)"
-          value={specialization}
-          onChange={(e) => setSpecialization(e.target.value)}
+          placeholder="Specialization"
+          onChange={(e)=>setSpecialization(e.target.value)}
           required
         />
-
-        <br /><br />
+        <br/><br/>
 
         <input
           type="text"
           placeholder="Contact"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
+          onChange={(e)=>setContact(e.target.value)}
           required
         />
+        <br/><br/>
 
-        <br /><br />
-
-        <button type="submit">Register Artisan</button>
+        <button type="submit">
+          Register Artisan
+        </button>
 
       </form>
-
     </div>
   );
 }

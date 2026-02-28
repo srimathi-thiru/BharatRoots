@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
 
@@ -14,36 +14,47 @@ function ProductList() {
 
   const fetchProducts = async () => {
 
-    const querySnapshot = await getDocs(collection(db, "products"));
+    try {
 
-    const data = await Promise.all(
-      querySnapshot.docs.map(async (docItem) => {
+      const querySnapshot = await getDocs(collection(db, "products"));
 
-        const product = {
-          id: docItem.id,
-          ...docItem.data()
-        };
+      const data = await Promise.all(
+        querySnapshot.docs.map(async (docItem) => {
 
-        // Fetch artisan verification status
-        if (product.artisanId) {
+          const product = {
+            id: docItem.id,
+            ...docItem.data()
+          };
 
-          const artisanRef = doc(db, "artisans", product.artisanId);
-          const artisanSnap = await getDoc(artisanRef);
+          // 🔹 Fetch artisan verification using userId match
+          if (product.artisanId) {
 
-          if (artisanSnap.exists()) {
-            product.artisanVerified = artisanSnap.data().verified;
+            const artisanQuery = query(
+              collection(db, "artisans"),
+              where("userId", "==", product.artisanId)
+            );
+
+            const artisanSnapshot = await getDocs(artisanQuery);
+
+            if (!artisanSnapshot.empty) {
+              product.artisanVerified =
+                artisanSnapshot.docs[0].data().verified;
+            }
+
           }
-        }
 
-        return product;
-      })
-    );
+          return product;
+        })
+      );
 
-    setProducts(data);
+      setProducts(data);
+
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   };
 
-
-  // Download Certificate Function
+  // 📄 Download Certificate
   const downloadCertificate = (product) => {
 
     const docPDF = new jsPDF();
@@ -55,7 +66,6 @@ function ProductList() {
     docPDF.text(`Product Name: ${product.name}`, 20, 40);
     docPDF.text(`Description: ${product.description}`, 20, 50);
     docPDF.text(`Price: ₹${product.price}`, 20, 60);
-
     docPDF.text(
       `Verified Artisan: ${product.artisanVerified ? "YES" : "NO"}`,
       20,
@@ -75,9 +85,7 @@ function ProductList() {
     docPDF.save(`${product.name}_certificate.pdf`);
   };
 
-
   return (
-
     <div>
 
       <h2 className="text-3xl font-bold mb-6 text-gray-800">
@@ -88,67 +96,60 @@ function ProductList() {
 
         {products.map(product => (
 
-          <div
-            key={product.id}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
-          >
+          <Link key={product.id} to={`/product/${product.id}`}>
 
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-48 object-cover rounded-lg mb-3"
-            />
+            <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
 
-            {/* Product Name */}
-            <Link to={`/artisan/${product.artisanId}`}>
-              <h3 className="text-xl font-semibold text-blue-600 mb-2 hover:underline">
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-48 object-cover rounded-lg mb-3"
+              />
+
+              <h3 className="text-xl font-semibold text-blue-600 mb-2">
                 {product.name}
               </h3>
-            </Link>
 
-            {/* VERIFIED BADGE */}
-            {product.artisanVerified && (
-              <span className="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full mb-2">
-                ✔ Verified Artisan
+              {product.artisanVerified && (
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full mb-2">
+                  ✔ Verified Artisan
+                </span>
+              )}
+
+              <p className="text-gray-600 mb-2">
+                {product.description}
+              </p>
+
+              <p className="text-lg font-bold text-green-600 mb-2">
+                ₹{product.price}
+              </p>
+
+              <span className="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                Authentic Swadeshi Certified
               </span>
-            )}
 
-            {/* Description */}
-            <p className="text-gray-600 mb-2">
-              {product.description}
-            </p>
+              <p className="text-xs text-gray-400 mt-2 break-all">
+                Code: {product.authenticityHash}
+              </p>
 
-            {/* Price */}
-            <p className="text-lg font-bold text-green-600 mb-2">
-              ₹{product.price}
-            </p>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  downloadCertificate(product);
+                }}
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Download Certificate
+              </button>
 
-            {/* Authentic Badge */}
-            <span className="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              Authentic Swadeshi Certified
-            </span>
+            </div>
 
-            {/* Hash */}
-            <p className="text-xs text-gray-400 mt-2 break-all">
-              Code: {product.authenticityHash}
-            </p>
-
-            {/* DOWNLOAD CERTIFICATE BUTTON */}
-            <button
-              onClick={() => downloadCertificate(product)}
-              className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Download Certificate
-            </button>
-
-          </div>
+          </Link>
 
         ))}
 
       </div>
-
     </div>
-
   );
 }
 
