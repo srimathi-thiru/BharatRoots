@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db } from "../firebaseConfig";
-import { doc, getDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
+import { CartContext } from "../context/CartContext";
+import PageWrapper from "../components/PageWrapper";
 
 function ProductDetail() {
 
   const { id } = useParams();
   const authContext = useContext(AuthContext);
   const currentUser = authContext?.currentUser;
+  const { addToCart } = useContext(CartContext);
 
   const [product, setProduct] = useState(null);
   const [artisan, setArtisan] = useState(null);
@@ -49,42 +52,17 @@ function ProductDetail() {
     setLoading(false);
   };
 
-  // 🔹 PURCHASE FUNCTION
-  const handlePurchase = async () => {
-
-    if (!currentUser) {
-      alert("Please login to continue");
-      return;
-    }
-
-    if (!product) {
-      alert("Product not loaded yet");
-      return;
-    }
-
-    try {
-
-      await addDoc(collection(db, "orders"), {
-        userId: currentUser.uid,
-        productId: id,
-        artisanId: product.artisanId,
-        status: "pending",
-        createdAt: new Date()
-      });
-
-      alert("Purchase request sent to artisan ✅");
-
-    } catch (error) {
-      console.error("Error creating order:", error);
-      alert("Failed to place order");
-    }
+  // 🔹 ADD TO CART FUNCTION
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart({ id, ...product });
   };
 
   if (loading) return <h2 className="text-center mt-10">Loading...</h2>;
   if (!product) return <h2 className="text-center mt-10">Product Not Found</h2>;
 
   return (
-    <div className="min-h-screen p-8 bg-amber-50">
+    <PageWrapper className="min-h-screen p-8 bg-amber-50">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6">
 
         <img
@@ -106,10 +84,10 @@ function ProductDetail() {
         </p>
 
         <button
-          onClick={handlePurchase}
-          className="bg-orange-600 text-white px-6 py-3 rounded mt-4 hover:bg-orange-700"
+          onClick={handleAddToCart}
+          className="bg-orange-600 text-white px-6 py-3 rounded mt-4 hover:bg-orange-700 transition"
         >
-          Buy from Artisan
+          Add to Cart
         </button>
 
         {artisan && (
@@ -127,7 +105,7 @@ function ProductDetail() {
         )}
 
       </div>
-    </div>
+    </PageWrapper>
   );
 }
 

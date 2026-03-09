@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ArtisanLogin = () => {
 
@@ -9,17 +10,16 @@ const ArtisanLogin = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Welcome back, Artisan!");
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid login credentials");
+      toast.error("Invalid login credentials");
     }
   };
 
@@ -30,12 +30,6 @@ const ArtisanLogin = () => {
         <h2 className="text-2xl font-bold text-center mb-6">
           Artisan Login
         </h2>
-
-        {error && (
-          <p className="text-red-500 mb-4 text-center">
-            {error}
-          </p>
-        )}
 
         <form onSubmit={handleLogin}>
 

@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 function AddProduct() {
 
@@ -36,18 +37,15 @@ function AddProduct() {
         createdAt: new Date()
       });
 
-      alert("Product added successfully ✅");
+      toast.success("Product added successfully ✅");
 
       setName("");
       setDescription("");
       setPrice("");
 
     } catch (error) {
-
-      alert(error.message);
-
+      toast.error(error.message);
     }
-
   };
 
   return (

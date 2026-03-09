@@ -3,17 +3,16 @@ import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function UserRegister() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
       const finalEmail = email || `${mobile}@bharatroots.com`;
@@ -34,10 +33,11 @@ function UserRegister() {
         createdAt: new Date()
       });
 
-      navigate("/user-dashboard");
+      toast.success("Registration successful!");
+      navigate("/dashboard");
 
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -47,12 +47,6 @@ function UserRegister() {
         <h2 className="text-2xl font-bold mb-6 text-center">
           User Registration
         </h2>
-
-        {error && (
-          <p className="text-red-500 mb-4 text-center">
-            {error}
-          </p>
-        )}
 
         <input
           type="email"

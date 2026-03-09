@@ -3,6 +3,7 @@ import { db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 function AddHeritage() {
 
@@ -33,14 +34,14 @@ if (userRole !== "ADMIN") {
         createdAt: new Date()
       });
 
-      alert("Heritage added successfully ✅");
+      toast.success("Heritage added successfully ✅");
 
       setTitle("");
       setRegion("");
       setDescription("");
 
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 

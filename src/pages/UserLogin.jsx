@@ -3,17 +3,16 @@ import { auth, db } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function UserLogin() {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -29,13 +28,14 @@ function UserLogin() {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists() && docSnap.data().role === "user") {
-        navigate("/user-dashboard");
+        toast.success("Welcome back!");
+        navigate("/dashboard");
       } else {
-        setError("Access denied: Not a User account");
+        toast.error("Access denied: Not a User account");
       }
 
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
+      toast.error("Invalid credentials. Please try again.");
     }
 
     setLoading(false);
@@ -47,12 +47,6 @@ function UserLogin() {
         <h2 className="text-2xl font-bold mb-6 text-center">
           User Login
         </h2>
-
-        {error && (
-          <p className="text-red-500 mb-4 text-center">
-            {error}
-          </p>
-        )}
 
         <input
           type="text"

@@ -3,6 +3,7 @@ import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function RegisterArtisan() {
 
@@ -42,12 +43,11 @@ function RegisterArtisan() {
 
       console.log("Artisan profile created:", docRef.id);
 
-      alert("Artisan registered successfully ✅");
+      toast.success("Artisan registered successfully ✅");
       navigate("/dashboard");
 
     } catch (error) {
-      console.error("Registration error:", error);
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 

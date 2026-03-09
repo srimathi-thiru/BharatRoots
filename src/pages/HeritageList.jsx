@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import PageWrapper from "../components/PageWrapper";
 
 function HeritageList() {
 
@@ -25,7 +26,7 @@ function HeritageList() {
 
   return (
 
-    <div>
+    <PageWrapper>
 
       <h2 className="text-3xl font-bold mb-6 text-gray-800">
         Cultural Heritage
@@ -66,7 +67,7 @@ function HeritageList() {
 
       </div>
 
-    </div>
+    </PageWrapper>
 
   );
 }

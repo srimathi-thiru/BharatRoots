@@ -3,6 +3,7 @@ import { db } from "../firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
+import PageWrapper from "../components/PageWrapper";
 
 function ProductList() {
 
@@ -86,7 +87,7 @@ function ProductList() {
   };
 
   return (
-    <div>
+    <PageWrapper>
 
       <h2 className="text-3xl font-bold mb-6 text-gray-800">
         Swadeshi Marketplace
@@ -149,7 +150,7 @@ function ProductList() {
         ))}
 
       </div>
-    </div>
+    </PageWrapper>
   );
 }
 

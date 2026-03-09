@@ -12,10 +12,14 @@ import {
 import { AuthContext } from "./context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth, db } from "./firebaseConfig";
+import { CartProvider } from "./context/CartContext";
+import { Toaster } from "react-hot-toast";
+import { AnimatePresence } from "framer-motion";
 
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 import FloatingChatbot from "./components/FloatingChatbot";
+import CartButton from "./components/CartButton";
 
 /* Pages */
 import LandingPage from "./pages/LandingPage";
@@ -35,6 +39,8 @@ import Search from "./pages/Search";
 import HeritageDetail from "./pages/HeritageDetail";
 import ProductDetail from "./pages/ProductDetail";
 import MyOrders from "./pages/MyOrders";
+import CartPage from "./pages/CartPage";
+import Checkout from "./pages/Checkout";
 
 /* NAVBAR */
 function Navbar() {
@@ -83,6 +89,7 @@ function Navbar() {
           )}
 
           <Link to="/search">Search</Link>
+          <CartButton />
 
           <button onClick={handleLogout} className="text-red-400">
             Logout
@@ -104,7 +111,7 @@ function Layout() {
     location.pathname === "/login/user" ||
     location.pathname === "/register/user" ||
     location.pathname === "/register-artisan" ||
-    location.pathname === "/login/artisan";   // ✅ added
+    location.pathname === "/login/artisan";
 
   if (!currentUser && !isLanding && !isAuthPage) {
     return <Navigate to="/login/user" replace />;
@@ -112,35 +119,38 @@ function Layout() {
 
   return (
     <>
+      <Toaster position="top-center" reverseOrder={false} />
       {!isLanding && <Navbar />}
 
-      <div className="max-w-6xl mx-auto p-6">
-        <Routes>
+      {/* ✅ Only wrap NON-landing pages */}
+      <div className={isLanding ? "" : "max-w-6xl mx-auto p-6"}>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login/user" element={<UserLogin />} />
+            <Route path="/register/user" element={<UserRegister />} />
+            <Route path="/register-artisan" element={<RegisterArtisan />} />
+            <Route path="/login/artisan" element={<ArtisanLogin />} />
 
-          {/* PUBLIC */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login/user" element={<UserLogin />} />
-          <Route path="/register/user" element={<UserRegister />} />
-          <Route path="/register-artisan" element={<RegisterArtisan />} />
-          <Route path="/login/artisan" element={<ArtisanLogin />} />
-
-          {/* PROTECTED */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/heritage" element={<HeritageList />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
-          <Route path="/add-product" element={<AddProduct />} />
-          <Route path="/add-heritage" element={<AddHeritage />} />
-          <Route path="/verify" element={<Verify />} />
-          <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
-          <Route path="/heritage/:id" element={<HeritageDetail />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/my-orders" element={<MyOrders />} />
-
-        </Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/heritage" element={<HeritageList />} />
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
+            <Route path="/add-product" element={<AddProduct />} />
+            <Route path="/add-heritage" element={<AddHeritage />} />
+            <Route path="/verify" element={<Verify />} />
+            <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
+            <Route path="/heritage/:id" element={<HeritageDetail />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<Checkout />} />
+          </Routes>
+        </AnimatePresence>
 
         {currentUser && <FloatingChatbot />}
+
       </div>
     </>
   );
@@ -149,9 +159,11 @@ function Layout() {
 export default function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/*" element={<Layout />} />
-      </Routes>
+      <CartProvider>
+        <Routes>
+          <Route path="/*" element={<Layout />} />
+        </Routes>
+      </CartProvider>
     </Router>
   );
 }
