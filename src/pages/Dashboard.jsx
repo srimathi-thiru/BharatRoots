@@ -99,7 +99,7 @@ const Dashboard = () => {
       setRecentNotifications(notifications.slice(0, 3)); // Keep top 3
 
       // If Artisan, fetch their profile details
-      if (userRole === "ARTISAN" && currentUser) {
+      if ((userRole === "ARTISAN" || userRole === "artisan") && currentUser) {
           const artisanQuery = query(
              collection(db, "artisans"),
              where("userId", "==", currentUser.uid)
@@ -180,28 +180,59 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* ARTISAN PREVIEW */}
-              {(userRole === "ARTISAN" && artisanProfile) && (
+              {/* ARTISAN PREVIEW & QUICK ACTIONS */}
+              {((userRole === "ARTISAN" || userRole === "artisan")) && (
+                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 flex flex-col justify-center">
+                  
+                  {artisanProfile ? (
+                    <>
+                      <h3 className="text-lg font-semibold mb-4 text-gray-800">Artisan Profile</h3>
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="bg-indigo-100 p-4 rounded-full">
+                          <FaUserTie size={32} className="text-indigo-600" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-lg text-gray-800">{artisanProfile.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {artisanProfile.specialization} • {artisanProfile.region || "India"}
+                          </p>
+                          {artisanProfile.verified && (
+                             <span className="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full mt-2 font-medium">
+                                ✔ Verified Artisan
+                             </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-gray-800">Artisan Quick Actions</h3>
+                      <p className="text-sm text-gray-500">Manage your store and products.</p>
+                    </div>
+                  )}
+
+                  <a href="/add-product" className="w-full text-center bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition">
+                     + Add New Product
+                  </a>
+                </div>
+              )}
+
+              {/* ADMIN QUICK ACTIONS */}
+              {(userRole === "ADMIN" || userRole === "admin") && (
                 <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 flex flex-col justify-center">
                   <h3 className="text-lg font-semibold mb-4 text-gray-800">
-                    Artisan Profile Preview
+                    Admin Tools
                   </h3>
-
-                  <div className="flex items-center gap-4">
-                    <div className="bg-indigo-100 p-4 rounded-full">
-                      <FaUserTie size={32} className="text-indigo-600" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-lg text-gray-800">{artisanProfile.name}</p>
-                      <p className="text-sm text-gray-500">
-                        {artisanProfile.specialization} • {artisanProfile.location || "India"}
-                      </p>
-                      {artisanProfile.verified && (
-                         <span className="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full mt-2 font-medium">
-                            ✔ Verified Artisan
-                         </span>
-                      )}
-                    </div>
+                  <div className="flex flex-col gap-3">
+                    <a href="/add-product" className="w-full text-center bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition">
+                       + Add New Product
+                    </a>
+                    <a href="/add-heritage" className="w-full text-center bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition">
+                       + Add Heritage Node
+                    </a>
+                    <a href="/admin-artisans" className="w-full text-center bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
+                       View Analytics Dashboard
+                    </a>
                   </div>
                 </div>
               )}

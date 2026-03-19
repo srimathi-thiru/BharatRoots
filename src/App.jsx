@@ -44,7 +44,7 @@ import Checkout from "./pages/Checkout";
 
 /* NAVBAR */
 function Navbar() {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, userRole } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [isArtisan, setIsArtisan] = useState(false);
@@ -85,10 +85,30 @@ function Navbar() {
           <Link to="/products">Marketplace</Link>
 
           {isArtisan && (
-            <Link to="/my-orders">My Orders</Link>
+            <>
+              <Link to="/my-orders">My Orders</Link>
+              <Link to="/add-product" className="text-green-400 font-bold ml-4 border border-green-400 px-3 py-1 rounded hover:bg-green-800 transition">
+                + Add Product
+              </Link>
+            </>
           )}
 
           <Link to="/search">Search</Link>
+          
+          {(userRole === "ADMIN" || userRole === "admin") && (
+            <>
+              <Link to="/add-product" className="text-green-300 font-bold ml-4 border border-green-400 px-3 py-1 rounded hover:bg-green-800 transition">
+                + Add Product
+              </Link>
+              <Link to="/add-heritage" className="text-purple-300 font-bold ml-4 border border-purple-400 px-3 py-1 rounded hover:bg-purple-800 transition">
+                + Add Heritage
+              </Link>
+              <Link to="/admin-artisans" className="text-blue-300 font-bold ml-4 border border-blue-400 px-3 py-1 rounded hover:bg-blue-800 transition">
+                Admin Analytics
+              </Link>
+            </>
+          )}
+
           <CartButton />
 
           <button onClick={handleLogout} className="text-red-400">

@@ -27,11 +27,16 @@ function UserLogin() {
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists() && docSnap.data().role === "user") {
-        toast.success("Welcome back!");
-        navigate("/dashboard");
+      if (docSnap.exists()) {
+        const role = docSnap.data().role;
+        if (role === "admin" || role === "ADMIN" || role === "user") {
+          toast.success(`Welcome back, ${role}!`);
+          navigate("/dashboard");
+        } else {
+          toast.error("Access denied: Unrecognized account type");
+        }
       } else {
-        toast.error("Access denied: Not a User account");
+        toast.error("Access denied: Account not found");
       }
 
     } catch (err) {

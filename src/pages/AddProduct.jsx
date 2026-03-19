@@ -6,13 +6,21 @@ import toast from "react-hot-toast";
 
 function AddProduct() {
 
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, userRole } = useContext(AuthContext);
   const [imageUrl, setImageUrl] = useState("");
 
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+
+  if (userRole !== "ARTISAN" && userRole !== "artisan") {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <h2 className="text-2xl text-red-600 font-bold">Access Denied: Artisan account required.</h2>
+      </div>
+    );
+  }
 
   // simple authenticity hash generator
   const generateHash = (data) => {
