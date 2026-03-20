@@ -88,67 +88,78 @@ function ProductList() {
 
   return (
     <PageWrapper>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h2 className="text-4xl font-black font-display tracking-tight mb-2 text-zinc-900">
+          Swadeshi Marketplace
+        </h2>
+        <p className="text-zinc-500 mb-10 text-lg">Discover authentic, verified heritage crafts directly from artisans.</p>
 
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">
-        Swadeshi Marketplace
-      </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map(product => (
 
-        {products.map(product => (
+            <Link key={product.id} to={`/product/${product.id}`} className="group h-full">
 
-          <Link key={product.id} to={`/product/${product.id}`}>
+              <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
 
-            <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
+                <div className="relative h-64 overflow-hidden">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {product.artisanVerified && (
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-emerald-700 border border-emerald-100/50 shadow-sm text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Verified Artisan
+                    </div>
+                  )}
+                </div>
 
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-lg mb-3"
-              />
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-bold font-display text-zinc-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                      {product.name}
+                    </h3>
+                    <p className="text-xl font-black text-indigo-900 shrink-0 ml-4">
+                      ₹{product.price}
+                    </p>
+                  </div>
 
-              <h3 className="text-xl font-semibold text-blue-600 mb-2">
-                {product.name}
-              </h3>
+                  <p className="text-zinc-500 text-sm mb-6 line-clamp-2">
+                    {product.description}
+                  </p>
 
-              {product.artisanVerified && (
-                <span className="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full mb-2">
-                  ✔ Verified Artisan
-                </span>
-              )}
+                  <div className="mt-auto">
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 mb-4">
+                      <p className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Authentic Swadeshi
+                      </p>
+                      <p className="text-[10px] text-emerald-600/70 font-mono truncate">
+                        {product.authenticityHash}
+                      </p>
+                    </div>
 
-              <p className="text-gray-600 mb-2">
-                {product.description}
-              </p>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        downloadCertificate(product);
+                      }}
+                      className="w-full bg-[#FCFAFA] text-zinc-700 border border-zinc-200 py-2.5 rounded-xl text-sm font-bold hover:bg-zinc-100 hover:text-indigo-600 transition-colors"
+                    >
+                      Download Certificate
+                    </button>
+                  </div>
 
-              <p className="text-lg font-bold text-green-600 mb-2">
-                ₹{product.price}
-              </p>
+                </div>
+              </div>
 
-              <span className="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-                Authentic Swadeshi Certified
-              </span>
+            </Link>
 
-              <p className="text-xs text-gray-400 mt-2 break-all">
-                Code: {product.authenticityHash}
-              </p>
+          ))}
 
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  downloadCertificate(product);
-                }}
-                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              >
-                Download Certificate
-              </button>
-
-            </div>
-
-          </Link>
-
-        ))}
-
+        </div>
       </div>
     </PageWrapper>
   );

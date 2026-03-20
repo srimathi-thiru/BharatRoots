@@ -64,73 +64,94 @@ function ProductDetail() {
   if (!product) return <h2 className="text-center mt-10">Product Not Found</h2>;
 
   return (
-    <PageWrapper className="min-h-screen p-8 bg-amber-50">
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6">
-
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className="w-full h-80 object-cover rounded-lg mb-6"
-        />
-
-        <h1 className="text-3xl font-bold text-orange-800 mb-2">
-          {product.name}
-        </h1>
-
-        <p className="text-xl text-green-700 mb-4">
-          ₹{product.price}
-        </p>
-
-        <p className="text-gray-700 mb-6">
-          {product.description}
-        </p>
-
-        <button
-          onClick={handleAddToCart}
-          className="bg-orange-600 text-white px-6 py-3 rounded mt-4 hover:bg-orange-700 transition font-bold"
-        >
-          Add to Cart
-        </button>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+    <PageWrapper className="p-4 md:p-8 bg-[#FCFAFA] min-h-screen">
+      <div className="max-w-7xl mx-auto bg-white rounded-[2rem] shadow-sm border border-zinc-200 overflow-hidden">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2">
           
-          {/* Artisan Card */}
-          {artisan && (
-            <div className="bg-gray-50 border border-gray-200 p-5 rounded-xl">
-              <h2 className="text-xl font-bold mb-3 text-gray-800">
-                Crafted By
-              </h2>
-              <div className="space-y-2">
-                <p className="text-gray-700"><b className="text-gray-900">Name:</b> {artisan.name}</p>
-                <p className="text-gray-700"><b className="text-gray-900">Region:</b> {artisan.region}</p>
-                <p className="text-gray-700"><b className="text-gray-900">Specialty:</b> {artisan.specialization}</p>
-              </div>
-            </div>
-          )}
+          {/* Left: Image Box */}
+          <div className="relative h-[400px] lg:h-auto bg-zinc-100">
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+          </div>
 
-          {/* Authenticity Badge */}
-          <div className="bg-green-50 border border-green-200 p-5 rounded-xl flex flex-col justify-center relative overflow-hidden">
-             {/* Decorative background shield */}
-             <FaShieldAlt className="absolute -right-4 -bottom-4 text-green-100/50" size={120} />
-             
-             <div className="relative z-10">
-                <h2 className="text-xl font-bold mb-2 text-green-800 flex items-center gap-2">
-                  <FaShieldAlt /> 100% Authentic Swadeshi
-                </h2>
-                <p className="text-sm text-green-700 mb-3">
-                  This product's origin is cryptographically verified on our digital ledger.
-                </p>
-                <div className="bg-white p-2 rounded text-xs font-mono text-gray-500 break-all border border-green-100 mb-3">
-                  {product.authenticityHash}
+          {/* Right: Content Details */}
+          <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+            
+            <div className="mb-2">
+              <span className="inline-block bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full">
+                Handcrafted
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-5xl font-black font-display text-zinc-900 mb-4 tracking-tight leading-tight">
+              {product.name}
+            </h1>
+
+            <p className="text-3xl font-bold text-indigo-600 mb-8">
+              ₹{product.price}
+            </p>
+
+            <p className="text-zinc-600 text-lg leading-relaxed mb-10">
+              {product.description}
+            </p>
+
+            <button
+              onClick={handleAddToCart}
+              className="bg-indigo-600 text-white px-8 py-4 rounded-2xl hover:bg-indigo-700 transition-all font-bold text-lg w-full shadow-md shadow-indigo-200 flex items-center justify-center gap-3 group"
+            >
+              Add to Cart
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
+              
+              {/* Artisan Card */}
+              {artisan && (
+                <div className="bg-[#FCFAFA] border border-zinc-200 p-5 rounded-2xl transition-all hover:shadow-sm">
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">
+                    Crafted By
+                  </h2>
+                  <div className="space-y-3">
+                    <p className="text-sm text-zinc-600 flex justify-between border-b border-zinc-100 pb-2"><b className="text-zinc-900">Name</b> <span>{artisan.name}</span></p>
+                    <p className="text-sm text-zinc-600 flex justify-between border-b border-zinc-100 pb-2"><b className="text-zinc-900">Region</b> <span>{artisan.region}</span></p>
+                    <p className="text-sm text-zinc-600 flex justify-between"><b className="text-zinc-900">Specialty</b> <span>{artisan.specialization}</span></p>
+                  </div>
                 </div>
-                
-                <button 
-                  onClick={() => navigate('/verify')}
-                  className="text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition"
-                >
-                  Verify Hash <FaExternalLinkAlt size={10} />
-                </button>
-             </div>
+              )}
+
+              {/* Authenticity Badge */}
+              <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl flex flex-col relative overflow-hidden transition-all hover:shadow-sm">
+                 <FaShieldAlt className="absolute -right-6 -bottom-6 text-emerald-100/50" size={140} />
+                 
+                 <div className="relative z-10 flex flex-col h-full">
+                    <h2 className="text-sm font-bold mb-3 text-emerald-800 flex items-center gap-2">
+                      <FaShieldAlt /> Authentic Swadeshi
+                    </h2>
+                    <p className="text-xs text-emerald-700 mb-4 leading-relaxed">
+                      Origin cryptographically verified on ledger.
+                    </p>
+                    
+                    <div className="mt-auto">
+                      <div className="bg-white/80 p-2.5 rounded-lg text-[10px] font-mono text-emerald-900 break-all border border-emerald-100 mb-3 shadow-inner">
+                        {product.authenticityHash}
+                      </div>
+                      
+                      <button 
+                        onClick={() => navigate('/verify')}
+                        className="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1.5 transition-colors uppercase tracking-widest bg-emerald-100/50 hover:bg-emerald-200 py-2 px-3 rounded-lg w-max"
+                      >
+                        Verify Hash <FaExternalLinkAlt size={10} />
+                      </button>
+                    </div>
+                 </div>
+              </div>
+
+            </div>
           </div>
 
         </div>

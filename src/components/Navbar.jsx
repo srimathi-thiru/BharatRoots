@@ -9,12 +9,13 @@ const LandingNavbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center px-10 py-4 bg-white shadow-sm">
+    <nav className="w-full bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
       
       {/* LEFT: Logo + Title */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 h-10">
         <img
-          src="/bharatroots-logo.png"   // place logo in public folder
+          src="/bharatroots-logo.svg"
           alt="BharatRoots Logo"
           className="h-10 w-10"
         />
@@ -24,7 +25,7 @@ const LandingNavbar = () => {
       </div>
 
       {/* RIGHT: Login Access & Language */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 h-10">
         
         <select 
           onChange={(e) => changeLanguage(e.target.value)}
@@ -51,6 +52,7 @@ const LandingNavbar = () => {
         >
           {t("Artisan Login")}
         </Link>
+      </div>
       </div>
     </nav>
   );

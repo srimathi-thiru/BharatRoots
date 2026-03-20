@@ -7,7 +7,7 @@ import { FaShieldAlt, FaCheckCircle, FaTimesCircle, FaSearch } from "react-icons
 function VerifyProduct() {
   const [hash, setHash] = useState("");
   const [product, setProduct] = useState(null);
-  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
   const verifyProduct = async () => {
@@ -40,67 +40,69 @@ function VerifyProduct() {
   };
 
   return (
-    <PageWrapper className="min-h-[80vh] flex justify-center items-center py-12 px-4 bg-gray-50">
+    <PageWrapper className="min-h-[80vh] flex justify-center items-center py-12 px-4 bg-[#FCFAFA]">
       
-      <div className="max-w-xl w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <div className="max-w-xl w-full bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-zinc-200 relative overflow-hidden">
         
-        <div className="text-center mb-8">
-          <div className="inline-flex justify-center items-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 mb-4">
-            <FaShieldAlt size={32} />
+        <FaShieldAlt className="absolute -right-8 -top-8 text-indigo-50/50" size={200} />
+
+        <div className="text-center mb-10 relative z-10">
+          <div className="inline-flex justify-center items-center w-20 h-20 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 mb-6 shadow-sm">
+            <FaShieldAlt size={36} />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">Authenticity Verification</h2>
-          <p className="text-gray-500 mt-2">
-            Enter the unique blockchain-style hash found on your physical product or certificate to verify its Swadeshi origins.
+          <h2 className="text-3xl md:text-4xl font-black font-display text-zinc-900 tracking-tight">Authenticity Verification</h2>
+          <p className="text-zinc-500 mt-4 leading-relaxed font-medium">
+            Enter the unique cryptographic hash found on your physical product or certificate to verify its Swadeshi origins.
           </p>
         </div>
 
-        <div className="relative mb-8">
+        <div className="relative mb-10 z-10">
           <input
             type="text"
             placeholder="e.g. QWp1bnUgUGF0aWthMTcxNjc4OT..."
             value={hash}
             onChange={(e) => setHash(e.target.value)}
-            className="w-full p-4 pl-5 pr-32 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 font-mono text-sm bg-gray-50 transition placeholder:font-sans"
+            className="w-full p-4 pl-6 pr-36 border-2 border-zinc-200 rounded-2xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-mono text-sm bg-[#FCFAFA] transition-all placeholder:font-sans placeholder:text-zinc-400 font-bold text-zinc-900 shadow-inner"
           />
           <button 
             onClick={verifyProduct}
             disabled={status === "loading"}
-            className="absolute right-2 top-2 bottom-2 bg-indigo-600 text-white px-6 rounded-lg font-medium hover:bg-indigo-700 transition disabled:bg-indigo-400 flex items-center gap-2"
+            className="absolute right-2 top-2 bottom-2 bg-zinc-900 text-amber-500 px-6 rounded-xl font-bold hover:bg-black transition-all disabled:bg-zinc-300 disabled:text-zinc-500 flex items-center gap-2 shadow-sm"
           >
             {status === "loading" ? "Checking..." : <><FaSearch /> Verify</>}
           </button>
         </div>
 
         {status === "error" && (
-          <div className="bg-red-50 border border-red-200 p-6 rounded-xl text-center">
-            <FaTimesCircle size={48} className="text-red-500 mx-auto mb-3" />
-            <h3 className="text-xl font-bold text-red-700 mb-1">Verification Failed</h3>
+          <div className="bg-red-50 border border-red-200 p-6 rounded-2xl text-center relative z-10 animate-in fade-in slide-in-from-bottom-4">
+            <FaTimesCircle size={48} className="text-red-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-red-700 mb-2">Verification Failed</h3>
             <p className="text-red-600 font-medium">{message}</p>
           </div>
         )}
 
         {status === "success" && product && (
-          <div className="bg-green-50 border border-green-200 p-6 rounded-xl">
+          <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl relative z-10 animate-in fade-in slide-in-from-bottom-4">
             <div className="text-center mb-6">
-               <FaCheckCircle size={48} className="text-green-500 mx-auto mb-3" />
-               <h3 className="text-xl font-bold text-green-700 mb-1">{message}</h3>
+               <FaCheckCircle size={56} className="text-emerald-500 mx-auto mb-4" />
+               <h3 className="text-xl font-black text-emerald-800 mb-2 font-display">{message}</h3>
             </div>
 
-            <div className="bg-white p-5 rounded-lg shadow-sm border border-green-100">
-               <div className="flex gap-4 items-center mb-4">
+            <div className="bg-white p-5 rounded-xl shadow-sm border border-emerald-100">
+               <div className="flex gap-4 items-center mb-4 pb-4 border-b border-zinc-100">
                  {product.imageUrl && (
-                    <img src={product.imageUrl} alt={product.name} className="w-16 h-16 object-cover rounded-md" />
+                    <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded-lg shadow-sm" />
                  )}
                  <div>
-                    <h4 className="font-bold text-lg text-gray-800">{product.name}</h4>
-                    <p className="text-green-600 font-bold">₹{product.price}</p>
+                    <h4 className="font-bold text-lg text-zinc-900 font-display mb-1">{product.name}</h4>
+                    <p className="text-indigo-600 font-black text-lg">₹{product.price}</p>
                  </div>
                </div>
                
-               <p className="text-sm text-gray-600 mb-4">{product.description}</p>
+               <p className="text-sm text-zinc-600 mb-5 leading-relaxed">{product.description}</p>
                
-               <div className="bg-gray-50 p-3 rounded text-xs font-mono text-gray-500 break-all border border-gray-100">
-                 <span className="font-bold text-gray-700 block mb-1">Verified Hash:</span>
+               <div className="bg-[#FCFAFA] p-4 rounded-lg text-xs font-mono text-zinc-500 break-all border border-zinc-200 shadow-inner">
+                 <span className="font-bold text-zinc-800 uppercase tracking-widest text-[10px] block mb-2">Verified Ledger Hash</span>
                  {hash}
                </div>
             </div>

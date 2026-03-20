@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userName, setUserName] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,23 +22,30 @@ export const AuthProvider = ({ children }) => {
           const docSnap = await getDoc(docRef);
           
           if (docSnap.exists()) {
-            setUserRole(docSnap.data().role || "user");
+            const data = docSnap.data();
+            setUserRole(data.role || "user");
+            setUserName(data.name || user.displayName || "User");
           } else {
             // Check artisans collection
             const artisanQuery = query(collection(db, "artisans"), where("userId", "==", user.uid));
             const artisanSnap = await getDocs(artisanQuery);
             if (!artisanSnap.empty) {
+              const data = artisanSnap.docs[0].data();
               setUserRole("artisan");
+              setUserName(data.name || user.displayName || "Artisan");
             } else {
               setUserRole("user");
+              setUserName(user.displayName || "User");
             }
           }
         } catch (error) {
-          console.error("Error fetching user role:", error);
+          console.error("Error fetching user data:", error);
           setUserRole("user");
+          setUserName(user.displayName || "User");
         }
       } else {
         setUserRole(null);
+        setUserName(null);
       }
       
       setLoading(false);
@@ -47,7 +55,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, userRole }}>
+    <AuthContext.Provider value={{ currentUser, userRole, userName }}>
       {!loading && children}
     </AuthContext.Provider>
   );

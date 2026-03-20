@@ -4,8 +4,8 @@ import { scaleLinear } from "d3-scale";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-// Reliable TopoJSON for India States
-const INDIA_TOPO_JSON = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/india/india-states.json";
+// Reliable GeoJSON for India States from Geohacker
+const INDIA_TOPO_JSON = "https://raw.githubusercontent.com/geohacker/india/master/state/india_state.geojson";
 
 // Color scale for density mapping (light orange to deep orange/red)
 const colorScale = scaleLinear()
@@ -74,7 +74,7 @@ const HeritageMap = () => {
             <Geographies geography={INDIA_TOPO_JSON}>
               {({ geographies }) =>
                 geographies.map((geo) => {
-                  const stateName = geo.properties.NAME_1.toLowerCase();
+                  const stateName = geo.properties.NAME_1 ? geo.properties.NAME_1.toLowerCase() : "";
                   const count = data[stateName] || 0;
                   
                   return (

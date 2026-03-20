@@ -41,6 +41,9 @@ import ProductDetail from "./pages/ProductDetail";
 import MyOrders from "./pages/MyOrders";
 import CartPage from "./pages/CartPage";
 import Checkout from "./pages/Checkout";
+import UserProfile from "./pages/UserProfile";
+import Remedies from "./pages/Remedies";
+import DashboardLayout from "./components/layout/DashboardLayout";
 
 /* NAVBAR */
 function Navbar() {
@@ -76,13 +79,21 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-gray-900 text-white px-8 py-4 shadow-lg">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-blue-400">BharatRoots</h1>
-        <div className="space-x-6">
+    <nav className="w-full bg-gray-900 text-white shadow-lg">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+        <div className="flex items-center gap-3 h-10">
+          <img
+            src="/bharatroots-logo.svg"
+            alt="BharatRoots Logo"
+            className="h-10 w-10"
+          />
+          <h1 className="text-3xl font-bold text-blue-400">BharatRoots</h1>
+        </div>
+        <div className="flex items-center space-x-6 h-10">
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/heritage">Heritage</Link>
           <Link to="/products">Marketplace</Link>
+          <Link to="/remedies">Remedies</Link>
 
           {isArtisan && (
             <>
@@ -137,41 +148,56 @@ function Layout() {
     return <Navigate to="/login/user" replace />;
   }
 
+  const RoutesContent = (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login/user" element={<UserLogin />} />
+        <Route path="/register/user" element={<UserRegister />} />
+        <Route path="/register-artisan" element={<RegisterArtisan />} />
+        <Route path="/login/artisan" element={<ArtisanLogin />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/heritage" element={<HeritageList />} />
+        <Route path="/products" element={<ProductList />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/add-heritage" element={<AddHeritage />} />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
+        <Route path="/heritage/:id" element={<HeritageDetail />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/remedies" element={<Remedies />} />
+      </Routes>
+    </AnimatePresence>
+  );
+
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      {!isLanding && <Navbar />}
-
-      {/* ✅ Only wrap NON-landing pages */}
-      <div className={isLanding ? "" : "max-w-6xl mx-auto p-6"}>
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login/user" element={<UserLogin />} />
-            <Route path="/register/user" element={<UserRegister />} />
-            <Route path="/register-artisan" element={<RegisterArtisan />} />
-            <Route path="/login/artisan" element={<ArtisanLogin />} />
-
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/heritage" element={<HeritageList />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
-            <Route path="/add-product" element={<AddProduct />} />
-            <Route path="/add-heritage" element={<AddHeritage />} />
-            <Route path="/verify" element={<Verify />} />
-            <Route path="/admin-artisans" element={<AdminArtisanPanel />} />
-            <Route path="/heritage/:id" element={<HeritageDetail />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/my-orders" element={<MyOrders />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<Checkout />} />
-          </Routes>
-        </AnimatePresence>
-
-        {currentUser && <FloatingChatbot />}
-
-      </div>
+      
+      {/* 
+        If it's auth pages, show old Navbar and constrained container.
+        If it's landing, show no Navbar and full width.
+        If it's authenticated (dashboard, etc), show DashboardLayout.
+      */}
+      {(!currentUser && isAuthPage) && <Navbar />}
+      
+      {currentUser && !isLanding && !isAuthPage ? (
+        <DashboardLayout>
+           {RoutesContent}
+           <FloatingChatbot />
+        </DashboardLayout>
+      ) : (
+        <div className={(isLanding || isAuthPage) ? "" : "max-w-6xl mx-auto p-6"}>
+          {RoutesContent}
+        </div>
+      )}
     </>
   );
 }

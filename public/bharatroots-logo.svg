@@ -1,0 +1,34 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#4F46E5" opacity="0.1" stroke="#4F46E5" stroke-width="1.5"/>
+  
+  <!-- Roots (bottom) -->
+  <path d="M 40 65 Q 35 75 32 85" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 50 65 Q 50 78 50 88" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 60 65 Q 65 75 68 85" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Plant stem (main) -->
+  <path d="M 50 65 Q 50 45 50 20" stroke="#16A34A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Left leaf cluster -->
+  <ellipse cx="38" cy="50" rx="8" ry="12" fill="#22C55E" transform="rotate(-35 38 50)"/>
+  <ellipse cx="35" cy="40" rx="7" ry="11" fill="#16A34A" transform="rotate(-45 35 40)"/>
+  
+  <!-- Right leaf cluster -->
+  <ellipse cx="62" cy="50" rx="8" ry="12" fill="#22C55E" transform="rotate(35 62 50)"/>
+  <ellipse cx="65" cy="40" rx="7" ry="11" fill="#16A34A" transform="rotate(45 65 40)"/>
+  
+  <!-- Top leaves -->
+  <ellipse cx="45" cy="25" rx="6" ry="10" fill="#22C55E" transform="rotate(-25 45 25)"/>
+  <ellipse cx="55" cy="25" rx="6" ry="10" fill="#22C55E" transform="rotate(25 55 25)"/>
+  
+  <!-- Center flower/bloom -->
+  <circle cx="50" cy="18" r="4" fill="#FB923C"/>
+  <circle cx="46" cy="16" r="2.5" fill="#FBBF24"/>
+  <circle cx="54" cy="16" r="2.5" fill="#FBBF24"/>
+  <circle cx="48" cy="12" r="2.5" fill="#FBBF24"/>
+  <circle cx="52" cy="12" r="2.5" fill="#FBBF24"/>
+  
+  <!-- Optional: decorative pattern at bottom -->
+  <circle cx="50" cy="95" r="2" fill="#4F46E5"/>
+</svg>
