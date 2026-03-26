@@ -13,7 +13,7 @@ function HeritageList() {
     fetchHeritage();
   }, []);
 
-  const fetchHeritage = async () => {
+  async function fetchHeritage() {
 
     const querySnapshot = await getDocs(collection(db, "heritage"));
 

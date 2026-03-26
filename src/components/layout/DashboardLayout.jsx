@@ -1,46 +1,40 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import ArtisanSidebar from '../ArtisanSidebar'; // ✅ FIXED IMPORT
 import TopNav from './TopNav';
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../context/AuthContext';
 
 const DashboardLayout = ({ children }) => {
-  const { currentUser } = useContext(AuthContext);
-  const [isArtisan, setIsArtisan] = useState(false);
+  const { currentUser, userRole } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (currentUser) {
-      checkIfArtisan();
-    }
-  }, [currentUser]);
-
-  const checkIfArtisan = async () => {
-    const q = query(
-      collection(db, "artisans"),
-      where("userId", "==", currentUser.uid)
-    );
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      setIsArtisan(true);
-    }
-  };
+  // ✅ Normalize role (VERY IMPORTANT)
+  const role = userRole?.toLowerCase();
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#FCFAFA] font-sans">
-      {/* Sidebar - fixed left */}
-      <Sidebar isArtisan={isArtisan} />
+      
+      {/* ✅ ROLE-BASED SIDEBAR */}
+      {role === "artisan" && <ArtisanSidebar />}
 
-      {/* Main Content Area */}
+      {role === "admin" && <Sidebar />} 
+
+      {role === "user" && <Sidebar />}
+
+      {/* ❗ fallback (in case role not loaded yet) */}
+      {!role && <Sidebar />}
+
+      {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+        
         {/* Top Navbar */}
         <TopNav />
-        
-        {/* Scrollable Content */}
+
+        {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-[#FCFAFA]">
-            {children || <Outlet />}
+          {children || <Outlet />}
         </main>
+
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ function ProductDetail() {
     fetchProduct();
   }, [id]);
 
-  const fetchProduct = async () => {
+  async function fetchProduct() {
     try {
 
       // 🔹 Fetch Product

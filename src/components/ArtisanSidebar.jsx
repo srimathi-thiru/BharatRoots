@@ -14,7 +14,7 @@ import {
   Brain,
 } from "lucide-react";
 
-const Sidebar = () => {
+const ArtisanSidebar = () => {
   const linkStyle =
     "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200";
 
@@ -120,4 +120,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default ArtisanSidebar;
