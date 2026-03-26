@@ -18,11 +18,16 @@ function AddHeritage() {
 
   const { userRole } = useContext(AuthContext);
 
+  // ✅ FIXED ROLE CHECK
   const normalizedRole = userRole?.toLowerCase();
-  if (normalizedRole !== "admin") {
+  const isAllowed = normalizedRole === "admin" || normalizedRole === "artisan";
+
+  if (!isAllowed) {
     return (
       <PageWrapper className="flex justify-center items-center py-20 min-h-[70vh] bg-[#FCFAFA]">
-        <h2 className="text-2xl text-red-600 font-bold font-display">Access Denied: Administrator level required.</h2>
+        <h2 className="text-2xl text-red-600 font-bold font-display">
+          Access Denied: Only Artisans & Admins can add heritage.
+        </h2>
       </PageWrapper>
     );
   }
@@ -59,7 +64,11 @@ function AddHeritage() {
         region,
         description,
         imageUrl,
-        createdAt: new Date()
+        createdAt: new Date(),
+
+        // ✅ OPTIONAL (recommended for future)
+        createdByRole: normalizedRole,
+        status: normalizedRole === "admin" ? "approved" : "pending"
       });
 
       toast.success("Heritage added successfully ✅");
@@ -84,102 +93,88 @@ function AddHeritage() {
            <div className="inline-flex justify-center items-center w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 mb-6 shadow-sm">
              <FaLandmark size={32} />
            </div>
-           <h2 className="text-4xl font-black font-display text-zinc-900 tracking-tight mb-2">Digital Heritage Documentation</h2>
-           <p className="text-zinc-500 font-medium">Record and map cultural heritage assets using AI-assisted extraction.</p>
+           <h2 className="text-4xl font-black font-display text-zinc-900 tracking-tight mb-2">
+             Digital Heritage Documentation
+           </h2>
+           <p className="text-zinc-500 font-medium">
+             Record and map cultural heritage assets using AI-assisted extraction.
+           </p>
         </div>
 
         <div className="relative z-10 bg-[#FCFAFA] shadow-inner border border-zinc-100 p-6 rounded-2xl mb-10">
           <h3 className="font-bold text-zinc-900 mb-2 flex items-center gap-2 font-display text-lg">
-            <span className="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg"><FaMagic size={14} /></span> AI-Powered Data Mapping
+            <span className="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg">
+              <FaMagic size={14} />
+            </span> 
+            AI-Powered Data Mapping
           </h3>
           <p className="text-sm text-zinc-500 mb-4 leading-relaxed font-medium">
-            Paste an unstructured folklore, historical record, or cultural story into the Description box below. Then click the AI Magic button to automatically extract and classify the data fields.
+            Paste an unstructured folklore, historical record, or cultural story.
           </p>
           <button 
             type="button" 
             onClick={handleAIExtraction} 
             disabled={isAnalyzing}
-            className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 disabled:bg-indigo-300 transition-all flex items-center gap-2 shadow-sm text-sm tracking-wide"
+            className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 disabled:bg-indigo-300 transition-all flex items-center gap-2 shadow-sm text-sm"
           >
-            {isAnalyzing ? "Processing NLP Analysis..." : "✨ Extract with AI"}
+            {isAnalyzing ? "Processing..." : "✨ Extract with AI"}
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Cultural Description (Unstructured Text)</label>
-            <textarea
-              className="w-full p-4 bg-[#FCFAFA] border-2 border-zinc-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-medium text-zinc-900 transition-all placeholder:text-zinc-400 h-40 resize-none shadow-sm"
-              placeholder="e.g. In the arid regions of Rajasthan, artisans have practiced blue pottery since..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
+          <textarea
+            className="w-full p-4 bg-[#FCFAFA] border-2 border-zinc-200 rounded-xl"
+            placeholder="Cultural description..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Title</label>
-              <input
-                type="text"
-                placeholder="e.g. Jaipur Blue Pottery"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-4 bg-[#FCFAFA] border-2 border-zinc-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-medium text-zinc-900 transition-all placeholder:text-zinc-400 shadow-sm"
-                required
-              />
-            </div>
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-4 border rounded-xl"
+            required
+          />
 
-            <div className="space-y-2">
-               <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Category</label>
-               <select 
-                  value={category} 
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full p-4 bg-[#FCFAFA] border-2 border-zinc-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-medium text-zinc-900 transition-all shadow-sm cursor-pointer"
-               >
-                  <option value="Monument">Monument</option>
-                  <option value="Craft">Craft</option>
-                  <option value="Festival">Festival</option>
-                  <option value="Tradition">Tradition</option>
-               </select>
-            </div>
-          </div>
+          <select 
+            value={category} 
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full p-4 border rounded-xl"
+          >
+            <option value="Monument">Monument</option>
+            <option value="Craft">Craft</option>
+            <option value="Festival">Festival</option>
+            <option value="Tradition">Tradition</option>
+          </select>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Region Map</label>
-              <input
-                type="text"
-                placeholder="e.g. Rajasthan"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="w-full p-4 bg-[#FCFAFA] border-2 border-zinc-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-medium text-zinc-900 transition-all placeholder:text-zinc-400 shadow-sm"
-                required
-              />
-            </div>
+          <input
+            type="text"
+            placeholder="Region"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            className="w-full p-4 border rounded-xl"
+            required
+          />
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Image URL</label>
-              <input
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full p-4 bg-[#FCFAFA] border-2 border-zinc-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-medium text-zinc-900 transition-all placeholder:text-zinc-400 shadow-sm"
-                required
-              />
-            </div>
-          </div>
+          <input
+            type="url"
+            placeholder="Image URL"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            className="w-full p-4 border rounded-xl"
+            required
+          />
 
-          <div className="pt-6 border-t border-zinc-100 mt-8">
-            <button 
-              type="submit"
-              className="w-full bg-zinc-900 text-indigo-400 py-4 rounded-xl font-bold font-display text-lg tracking-wide hover:bg-black hover:text-indigo-300 transition-all shadow-md flex justify-center items-center"
-            >
-              Save to Digital Database
-            </button>
-          </div>
+          <button 
+            type="submit"
+            className="w-full bg-zinc-900 text-indigo-400 py-4 rounded-xl font-bold hover:bg-black"
+          >
+            Save to Database
+          </button>
 
         </form>
       </div>

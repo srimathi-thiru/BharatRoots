@@ -22,7 +22,7 @@ function MyOrders() {
     fetchOrders();
   }, [currentUser]);
 
-  const fetchOrders = async () => {
+  async function fetchOrders() {
 
     if (!currentUser) return;
 
