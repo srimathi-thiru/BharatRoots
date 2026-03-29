@@ -1,18 +1,31 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import PageWrapper from "../components/PageWrapper";
 import { MdAddBusiness, MdImage } from "react-icons/md";
+import { useLocation } from "react-router-dom";
 
 function AddProduct() {
   const { currentUser, userRole } = useContext(AuthContext);
+  const location = useLocation();
+  const aiDraft = location.state?.aiDraft;
+
   const [imageUrl, setImageUrl] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Hydrate fields if coming from Creator Studio AI generator
+  useEffect(() => {
+    if (aiDraft) {
+      setName(aiDraft.title || "");
+      setDescription(aiDraft.description || "");
+      // You can also add a success pulse effect or visually indicate AI assistance if desired
+    }
+  }, [aiDraft]);
 
   const normalizedRole = userRole?.toLowerCase();
   if (normalizedRole !== "artisan" && normalizedRole !== "admin") {

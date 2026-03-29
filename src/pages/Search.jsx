@@ -29,9 +29,11 @@ function Search() {
     const heritageFiltered = heritageSnapshot.docs
       .map(doc => ({ id: doc.id, ...doc.data() }))
       .filter(item =>
-        item.title?.toLowerCase().includes(value.toLowerCase()) ||
-        item.category?.toLowerCase().includes(value.toLowerCase()) ||
-        item.region?.toLowerCase().includes(value.toLowerCase())
+        (item.status === "approved" || !item.status) && (
+          item.title?.toLowerCase().includes(value.toLowerCase()) ||
+          item.category?.toLowerCase().includes(value.toLowerCase()) ||
+          item.region?.toLowerCase().includes(value.toLowerCase())
+        )
       );
 
     const productFiltered = productSnapshot.docs

@@ -50,6 +50,11 @@ import GrowthInsights from "./pages/GrowthInsights";
 import CustomerConnect from "./pages/CustomerConnect";
 import SmartSuggestions from "./pages/SmartSuggestions";
 
+/* New User Pages matching Use Case */
+import UserOrders from "./pages/UserOrders";
+import UserSmartSuggestions from "./pages/UserSmartSuggestions";
+import UserChat from "./pages/UserChat";
+
 /* 🔐 ROLE PROTECTION */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { currentUser, userRole } = useContext(AuthContext);
@@ -98,16 +103,73 @@ function Layout() {
           </ProtectedRoute>
         } />
 
-        <Route path="/heritage" element={<HeritageList />} />
-        <Route path="/products" element={<ProductList />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/artisan/:artisanId" element={<ArtisanProfile />} />
-        <Route path="/heritage/:id" element={<HeritageDetail />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/remedies" element={<Remedies />} />
+        <Route path="/heritage" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <HeritageList />
+          </ProtectedRoute>
+        } />
+        <Route path="/products" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <ProductList />
+          </ProtectedRoute>
+        } />
+        <Route path="/search" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <Search />
+          </ProtectedRoute>
+        } />
+        <Route path="/artisan/:artisanId" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <ArtisanProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="/heritage/:id" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <HeritageDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/product/:id" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <ProductDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/cart" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <CartPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/checkout" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <Checkout />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <UserProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="/remedies" element={
+          <ProtectedRoute allowedRoles={["user", "artisan", "admin"]}>
+             <Remedies />
+          </ProtectedRoute>
+        } />
+
+        {/* User Specific Use Cases */}
+        <Route path="/user-orders" element={
+          <ProtectedRoute allowedRoles={["user", "admin"]}>
+            <UserOrders />
+          </ProtectedRoute>
+        } />
+        <Route path="/user-suggestions" element={
+          <ProtectedRoute allowedRoles={["user", "admin"]}>
+            <UserSmartSuggestions />
+          </ProtectedRoute>
+        } />
+        <Route path="/user-chat" element={
+          <ProtectedRoute allowedRoles={["user", "admin"]}>
+            <UserChat />
+          </ProtectedRoute>
+        } />
 
         {/* Artisan + Admin */}
         <Route path="/add-product" element={

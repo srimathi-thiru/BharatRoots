@@ -71,7 +71,11 @@ function AddHeritage() {
         status: normalizedRole === "admin" ? "approved" : "pending"
       });
 
-      toast.success("Heritage added successfully ✅");
+      toast.success(
+        normalizedRole === "admin" 
+          ? "Heritage added successfully ✅" 
+          : "Heritage submitted! Pending admin review. ⏳"
+      );
 
       setTitle("");
       setRegion("");

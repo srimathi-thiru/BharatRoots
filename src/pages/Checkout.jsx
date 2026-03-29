@@ -74,7 +74,7 @@ const Checkout = () => {
 
       toast.success("Order placed successfully! 🎉");
       clearCart();
-      navigate("/my-orders");
+      navigate("/user-orders");
 
     } catch (error) {
       console.error("Order error:", error);

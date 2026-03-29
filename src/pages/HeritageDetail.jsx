@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PageWrapper from "../components/PageWrapper";
-import { FaArrowLeft, FaMapMarkerAlt, FaFeatherAlt } from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
+import { FaArrowLeft, FaMapMarkerAlt, FaFeatherAlt, FaShieldAlt } from "react-icons/fa";
 
 function HeritageDetail() {
 
   const { id } = useParams();
   const navigate = useNavigate();
+  const { userRole } = useContext(AuthContext);
   const [heritage, setHeritage] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +21,13 @@ function HeritageDetail() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setHeritage(docSnap.data());
+          const data = docSnap.data();
+          // Check if pending and user is NOT admin
+          if (data.status === "pending" && userRole?.toLowerCase() !== "admin") {
+            setHeritage(null);
+          } else {
+            setHeritage(data);
+          }
         } else {
           console.log("No such heritage found!");
         }

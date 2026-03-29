@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ArtisanSidebar from '../ArtisanSidebar'; // ✅ FIXED IMPORT
+import AdminSidebar from './AdminSidebar';
 import TopNav from './TopNav';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -17,7 +18,7 @@ const DashboardLayout = ({ children }) => {
       {/* ✅ ROLE-BASED SIDEBAR */}
       {role === "artisan" && <ArtisanSidebar />}
 
-      {role === "admin" && <Sidebar />} 
+      {role === "admin" && <AdminSidebar />} 
 
       {role === "user" && <Sidebar />}
 

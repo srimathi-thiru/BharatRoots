@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 // Reliable GeoJSON for India States from Geohacker
@@ -22,11 +22,14 @@ const HeritageMap = () => {
 
   const fetchHeritageData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "heritage"));
+      const heritageRef = collection(db, "heritage");
+      const querySnapshot = await getDocs(heritageRef);
       
       const regionCounts = {};
       querySnapshot.forEach((doc) => {
         const item = doc.data();
+        if (item.status === "pending") return;
+        
         if (item.region) {
             // Normalize region names to match standard map formatting
             const regionName = item.region.trim().toLowerCase();

@@ -2,15 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Home,
+  ShieldCheck,
+  Users,
   Compass,
   ShoppingBag,
-  Leaf,
-  Package,
-  TrendingUp,
-  MessageSquare
+  Leaf
 } from "lucide-react";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const linkStyle =
     "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200";
 
@@ -21,6 +20,19 @@ const Sidebar = () => {
       <Link to="/dashboard" className={linkStyle}>
         <Home size={18} /> Dashboard
       </Link>
+
+      {/* ADMIN ACTIONS */}
+      <div>
+        <p className="text-xs text-gray-400 mb-1 mt-3">ADMIN ACTIONS</p>
+        <div className="space-y-1">
+          <Link to="/admin-artisans" className={linkStyle}>
+            <Users size={16} /> Artisan Control Panel
+          </Link>
+          <Link to="/verify" className={linkStyle}>
+            <ShieldCheck size={16} /> Authenticity Verification
+          </Link>
+        </div>
+      </div>
 
       {/* EXPLORE */}
       <div>
@@ -38,24 +50,8 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* PERSONAL */}
-      <div>
-        <p className="text-xs text-gray-400 mb-1 mt-3">PERSONAL</p>
-        <div className="space-y-1">
-          <Link to="/user-orders" className={linkStyle}>
-            <Package size={16} /> Track Orders
-          </Link>
-          <Link to="/user-suggestions" className={linkStyle}>
-            <TrendingUp size={16} /> Smart Suggestions
-          </Link>
-          <Link to="/user-chat" className={linkStyle}>
-            <MessageSquare size={16} /> Customer Connect
-          </Link>
-        </div>
-      </div>
-
     </div>
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

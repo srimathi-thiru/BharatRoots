@@ -79,10 +79,10 @@ const HeroSection = () => {
            <div className="aspect-[4/5] bg-white rounded-[2rem] shadow-2xl p-4 relative overflow-hidden group">
               <div className="w-full h-full bg-slate-100 rounded-[1.5rem] overflow-hidden relative">
                  <img 
-                    src="https://images.unsplash.com/photo-1605814571999-566b6e4e082f?auto=format&fit=crop&w=800&q=80" 
-                    alt="Indian Heritage Craft" 
+                    src="https://images.unsplash.com/photo-1506806732259-39c2d0268443?auto=format&fit=crop&w=800&q=80" 
+                    alt="Indian Heritage Craft - Artisan Pottery" 
                     className="w-full h-full object-cover grayscale-[0.2] transition-transform duration-700 group-hover:scale-110" 
-                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80" }}
+                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1610715936287-6c2ad208cdbf?auto=format&fit=crop&w=800&q=80" }}
                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
                  <div className="absolute bottom-8 left-8 right-8 text-white">

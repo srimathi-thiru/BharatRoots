@@ -7,12 +7,16 @@ import { MdSearch, MdMailOutline, MdNotificationsNone, MdLogout } from 'react-ic
 import CartButton from '../CartButton';
 
 const TopNav = () => {
-  const { currentUser, userName } = useContext(AuthContext);
+  const { currentUser, userName, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/", { replace: true });
+    if (logout) {
+      await logout();
+    } else {
+      await signOut(auth);
+      window.location.href = "/";
+    }
   };
 
   const today = new Intl.DateTimeFormat('en-GB', {

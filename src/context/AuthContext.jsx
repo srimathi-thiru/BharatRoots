@@ -35,10 +35,28 @@ export const AuthProvider = ({ children }) => {
           
           if (docSnap.exists()) {
             const data = docSnap.data();
-            setUserRole(data.role || "user");
-            setUserName(data.name || user.displayName || "User");
+            const fetchedRole = data.role || "user";
+            setUserRole(fetchedRole);
+            
+            if (fetchedRole === "artisan") {
+              const artisanQuery = query(
+                collection(db, "artisans"),
+                where("userId", "==", user.uid)
+              );
+              const artisanSnap = await getDocs(artisanQuery);
+              if (!artisanSnap.empty) {
+                setUserName(artisanSnap.docs[0].data().name || "Artisan");
+              } else {
+                setUserName("Artisan");
+              }
+            } else if (fetchedRole === "admin") {
+              setUserName(data.name || "Admin");
+            } else {
+              const fallbackName = data.name || user.displayName || user.email?.split('@')[0] || "User";
+              setUserName(fallbackName);
+            }
           } else {
-            // Check artisans collection
+            // Check artisans collection directly just in case
             const artisanQuery = query(
               collection(db, "artisans"),
               where("userId", "==", user.uid)
@@ -52,7 +70,8 @@ export const AuthProvider = ({ children }) => {
               setUserName(data.name || user.displayName || "Artisan");
             } else {
               setUserRole("user");
-              setUserName(user.displayName || "User");
+              const fallbackName = user.displayName || user.email?.split('@')[0] || "User";
+              setUserName(fallbackName);
             }
           }
         } catch (error) {

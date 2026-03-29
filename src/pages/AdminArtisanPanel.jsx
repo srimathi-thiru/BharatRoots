@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { db } from "../firebaseConfig";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import PageWrapper from "../components/PageWrapper";
+import toast from "react-hot-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { FaUsers, FaPalette, FaExclamationTriangle } from "react-icons/fa";
 
@@ -11,6 +13,7 @@ function AdminArtisanPanel() {
   const { userRole } = useContext(AuthContext);
   const [artisans, setArtisans] = useState([]);
   const [heritageData, setHeritageData] = useState([]);
+  const [pendingHeritage, setPendingHeritage] = useState([]);
   const [regionStats, setRegionStats] = useState([]);
   const [endangeredStats, setEndangeredStats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +65,38 @@ function AdminArtisanPanel() {
     })).sort((a,b) => a.value - b.value); // Sort ascending to show most endangered first
 
     setEndangeredStats(formattedCats);
+
+    // 5. Fetch Pending Heritage for Moderation
+    const pendingH = hData.filter(h => h.status === "pending");
+    const hWithIds = heritageSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setPendingHeritage(hWithIds.filter(h => h.status === "pending"));
+
     setLoading(false);
+  };
+
+  const approveHeritage = async (id) => {
+    try {
+      const heritageRef = doc(db, "heritage", id);
+      await updateDoc(heritageRef, {
+        status: "approved"
+      });
+      toast.success("Heritage approved successfully! 🎉");
+      fetchDashboardData();
+    } catch (err) {
+      toast.error("Failed to approve heritage.");
+    }
+  };
+
+  const deleteHeritage = async (id) => {
+    if (!window.confirm("Are you sure you want to reject and delete this heritage submission?")) return;
+    try {
+      const heritageRef = doc(db, "heritage", id);
+      await deleteDoc(heritageRef);
+      toast.success("Heritage submission rejected and removed.");
+      fetchDashboardData();
+    } catch (err) {
+      toast.error("Failed to delete heritage.");
+    }
   };
 
   const verifyArtisan = async (id) => {
@@ -190,6 +224,76 @@ function AdminArtisanPanel() {
                    </div>
                 </div>
 
+             </div>             {/* HERITAGE APPROVAL QUEUE */}
+             <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden hover:shadow-md transition-shadow mt-12">
+               <div className="p-6 border-b border-zinc-100 bg-[#FCFAFA] flex justify-between items-center">
+                  <div>
+                     <h2 className="text-lg font-bold text-zinc-900 font-display">Heritage Approval Queue</h2>
+                     <p className="text-xs text-zinc-500 font-medium">Verify community submitted cultural assets.</p>
+                  </div>
+                  <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-widest">
+                    {pendingHeritage.length} Pending
+                  </span>
+               </div>
+               
+               <div className="overflow-x-auto">
+                 <table className="w-full text-left">
+                   <thead className="bg-[#FCFAFA] text-zinc-500 text-xs font-bold uppercase tracking-widest border-b border-zinc-200">
+                     <tr>
+                       <th className="px-6 py-4">Heritage Asset</th>
+                       <th className="px-6 py-4">Region</th>
+                       <th className="px-6 py-4">Description Snippet</th>
+                       <th className="px-6 py-4 text-right">Moderation Actions</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-zinc-100">
+                     {pendingHeritage.map(item => (
+                       <tr key={item.id} className="hover:bg-zinc-50 transition-colors group">
+                         <td className="px-6 py-4">
+                           <div className="flex items-center gap-4">
+                              <img src={item.imageUrl} alt="" className="w-12 h-12 object-cover rounded-xl border-2 border-white shadow-sm ring-1 ring-zinc-100" />
+                              <div>
+                                 <p className="font-bold text-zinc-900 line-clamp-1">{item.title}</p>
+                                 <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-tighter">{item.category}</p>
+                              </div>
+                           </div>
+                         </td>
+                         <td className="px-6 py-4 text-zinc-600 font-medium">{item.region}</td>
+                         <td className="px-6 py-4">
+                            <p className="text-xs text-zinc-500 line-clamp-2 max-w-xs">{item.description}</p>
+                         </td>
+                         <td className="px-6 py-4 text-right">
+                           <div className="flex items-center justify-end gap-3 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                             <Link 
+                               to={`/heritage/${item.id}`} 
+                               className="text-indigo-600 hover:text-indigo-800 font-bold text-xs"
+                             >
+                               Inspect
+                             </Link>
+                             <button
+                               onClick={() => approveHeritage(item.id)}
+                               className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors shadow-sm"
+                             >
+                               Approve
+                             </button>
+                             <button
+                               onClick={() => deleteHeritage(item.id)}
+                               className="bg-red-50 text-red-600 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                             >
+                               Reject
+                             </button>
+                           </div>
+                         </td>
+                       </tr>
+                     ))}
+                     {pendingHeritage.length === 0 && (
+                       <tr>
+                         <td colSpan="5" className="px-6 py-12 text-center text-zinc-500 italic font-medium">No pending heritage submissions.</td>
+                       </tr>
+                     )}
+                   </tbody>
+                 </table>
+               </div>
              </div>
 
              {/* ARTISAN VERIFICATION TABLE */}

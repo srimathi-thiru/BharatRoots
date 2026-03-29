@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import HeritageMap from "../components/HeritageMap";
@@ -15,12 +15,13 @@ function HeritageList() {
 
   async function fetchHeritage() {
 
-    const querySnapshot = await getDocs(collection(db, "heritage"));
+    const heritageRef = collection(db, "heritage");
+    const querySnapshot = await getDocs(heritageRef);
 
     const data = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    })).filter(doc => doc.status !== "pending");
 
     setHeritageList(data);
   };
