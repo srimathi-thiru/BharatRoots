@@ -15,15 +15,8 @@ const GrowthInsights = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Simulated chart data (realistic seasonal trajectory for an artisan)
-  const chartData = [
-    { month: "Jan", views: 400 },
-    { month: "Feb", views: 600 },
-    { month: "Mar", views: 850 },
-    { month: "Apr", views: 700 },
-    { month: "May", views: 1100 },
-    { month: "Jun", views: 1850 },
-  ];
+  // Real monthly chart data from orders
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     fetchInsights();
@@ -46,8 +39,17 @@ const GrowthInsights = () => {
             orderCount++;
          }
       });
-
-      // Fetch Product count as a base for simulated audience reach
+      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const monthlySales = {};
+      orderSnap.forEach(doc => {
+        const data = doc.data();
+        if (data.createdAt?.seconds) {
+          const month = monthNames[new Date(data.createdAt.seconds * 1000).getMonth()];
+          monthlySales[month] = (monthlySales[month] || 0) + Number(data.price || 0);
+        }
+      });
+      const last6 = monthNames.slice(Math.max(0, new Date().getMonth() - 5), new Date().getMonth() + 1);
+      setChartData(last6.map(m => ({ month: m, sales: monthlySales[m] || 0 })));
       const pQuery = query(collection(db, "products"), where("artisanId", "==", currentUser.uid));
       const pSnap = await getDocs(pQuery);
       const productCount = pSnap.size;
@@ -142,13 +144,13 @@ const GrowthInsights = () => {
              </div>
 
              {chartData.map((data, index) => {
-               const maxViews = 2000; 
-               const heightPercent = (data.views / maxViews) * 100;
+               const maxSales = Math.max(...chartData.map(d => d.sales), 1);
+               const heightPercent = (data.sales / maxSales) * 100;
                return (
                  <div key={index} className="flex flex-col items-center gap-3 w-full group relative z-10 pt-4">
                     {/* Tooltip */}
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-stone-800 text-white text-[10px] py-1.5 px-3 rounded-md absolute -top-8 font-bold whitespace-nowrap shadow-lg hidden sm:block pointer-events-none">
-                      {data.views} Views
+                      ₹{data.sales} Sales
                     </div>
                     {/* Bar */}
                     <div 

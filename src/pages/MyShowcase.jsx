@@ -165,7 +165,7 @@ const Showcase = () => {
     
                     <div className="flex justify-between items-center mt-auto pt-5 border-t border-stone-100 text-stone-500 text-sm">
                       <span className="flex items-center gap-1.5 font-bold bg-stone-50 text-stone-600 px-3 py-2 rounded-xl border border-stone-200 text-xs shadow-sm">
-                        <MdVisibility size={16} /> {Math.floor(Math.random() * 50) + 10} Views
+                        <MdVisibility size={16} /> {((product.id.charCodeAt(0) + product.id.charCodeAt(1)) % 40) + 10} Views
                       </span>
                     </div>
                 </div>

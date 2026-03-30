@@ -100,14 +100,14 @@ function AdminArtisanPanel() {
   };
 
   const verifyArtisan = async (id) => {
-
-    const artisanRef = doc(db, "artisans", id);
-
-    await updateDoc(artisanRef, {
-      verified: true
-    });
-
-    fetchArtisans();
+    try {
+      const artisanRef = doc(db, "artisans", id);
+      await updateDoc(artisanRef, { verified: true });
+      toast.success("Artisan verified successfully!");
+      fetchDashboardData();
+    } catch (err) {
+      toast.error("Failed to verify artisan.");
+    }
   };
 
   const normalizedRole = userRole?.toLowerCase();

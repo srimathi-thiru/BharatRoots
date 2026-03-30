@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import PageWrapper from "../components/PageWrapper";
 import { MdPersonOutline, MdEmail, MdStorefront, MdAdminPanelSettings } from "react-icons/md";
 import EditProfileModal from "../components/EditProfileModal";
-import { getUserOrders } from "../services/orderService";
+
 import { db } from "../firebaseConfig";
 import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
@@ -68,7 +68,10 @@ function UserProfile() {
 
         // 2. Fetch role-specific data
         if (role === "user") {
-          const data = await getUserOrders(currentUser.uid);
+          const ordersQuery = query(collection(db, "orders"), where("userId", "==", currentUser.uid));
+          const ordersSnap = await getDocs(ordersQuery);
+          const data = ordersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+          data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
           setOrders(data);
         } else if (role === "artisan") {
           // Fetch artisan specific profile overrides
@@ -196,7 +199,7 @@ function UserProfile() {
           {role === "user" && (
             <>
               <StatCard label="Total Orders" value={orders.length} />
-              <StatCard label="Total Spent" value={`₹${orders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0)}`} />
+              <StatCard label="Total Spent" value={`₹${orders.reduce((sum, o) => sum + (Number(o.price) || 0), 0)}`} />
             </>
           )}
 
@@ -258,21 +261,21 @@ function UserProfile() {
                   {orders.map((order) => (
                     <div key={order.id} className={STYLES.listItem}>
                       <div>
-                        <p className="font-bold text-zinc-800">Order #{order.id}</p>
-                        <p className="text-xs text-zinc-400">{order.date}</p>
+                        <p className="font-bold text-zinc-800">{order.productName || `Order #${order.id.substring(0, 8)}`}</p>
+                        <p className="text-xs text-zinc-400">
+                          {order.createdAt?.seconds
+                            ? new Date(order.createdAt.seconds * 1000).toLocaleDateString()
+                            : ""}
+                        </p>
                       </div>
-                      <span
-                        className={`text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded-md ${
-                          order.status === "Delivered"
-                            ? "bg-green-100 text-green-700"
-                            : order.status === "Pending"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-blue-100 text-blue-700"
-                        }`}
-                      >
-                        {order.status}
+                      <span className={`text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded-md ${
+                        order.status === "approved" ? "bg-green-100 text-green-700" :
+                        order.status === "rejected" ? "bg-red-100 text-red-700" :
+                        "bg-amber-100 text-amber-700"
+                      }`}>
+                        {order.status || "pending"}
                       </span>
-                      <span className="font-black text-zinc-900">₹{order.amount}</span>
+                      <span className="font-black text-zinc-900">₹{order.price}</span>
                     </div>
                   ))}
                 </div>
