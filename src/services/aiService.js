@@ -60,6 +60,61 @@ export const analyzeCulturalText = async (text) => {
   };
 };
 
+export const generateHeritageStory = async (heritage) => {
+  await delay(2000);
+
+  const { title, region, category, description } = heritage;
+  const lowerDesc = description?.toLowerCase() || "";
+
+  const eraMap = {
+    Monument: "ancient",
+    Craft: "centuries-old",
+    Festival: "timeless",
+    Tradition: "age-old",
+  };
+  const era = eraMap[category] || "historic";
+
+  const openings = [
+    `Long before the modern world took shape, in the heart of ${region}, there existed a ${era} legacy known as ${title}.`,
+    `Nestled in the cultural tapestry of ${region}, the story of ${title} has been whispered through generations.`,
+    `In the golden era of Indian civilization, ${region} gave birth to something extraordinary — ${title}.`,
+  ];
+
+  const opening = openings[Math.floor(Math.random() * openings.length)];
+
+  const craftLine = lowerDesc.includes("craft") || lowerDesc.includes("weav")
+    ? ` Skilled artisans poured their soul into every creation, passing down techniques that no machine could replicate.`
+    : "";
+
+  const festivalLine = lowerDesc.includes("festival") || lowerDesc.includes("celebrat")
+    ? ` The air would fill with music, color, and devotion as communities gathered in joyous celebration.`
+    : "";
+
+  const story = `${opening} ${description} ${craftLine}${festivalLine}
+
+Today, ${title} stands as a proud symbol of India's undying cultural spirit. Preserving it is not merely an act of nostalgia — it is a commitment to the identity of a civilization that has endured for millennia. BharatRoots is honored to document and share this living heritage with the world.`;
+
+  return story.trim();
+};
+
+export const getYouTubeSearchUrl = (heritage) => {
+  const query = encodeURIComponent(`${heritage.title} ${heritage.region} heritage India`);
+  return `https://www.youtube.com/embed?listType=search&list=${query}`;
+};
+
+export const getYouTubeVideos = (heritage) => {
+  const queries = [
+    `${heritage.title} ${heritage.region} history`,
+    `${heritage.category} heritage India documentary`,
+    `${heritage.region} culture tradition India`,
+  ];
+  return queries.map((q) => ({
+    label: q,
+    url: `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
+    embedSearch: `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(q)}`,
+  }));
+};
+
 export const analyzeCulturalImage = async (imageUrl) => {
     await delay(2000); // Simulate Vision API scanning
     // A mock Vision AI detection returning geographical metadata and tags
