@@ -14,46 +14,46 @@ const exploreItems = [
   { to: "/search", icon: Search, label: "Search" },
 ];
 
-const NavLink = ({ to, icon: Icon, label }) => {
+const NavLink = ({ to, icon: Icon, label, onClose }) => {
   const { pathname } = useLocation();
   const active = pathname === to;
   return (
-    <Link to={to} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${active ? "bg-amber-50 text-amber-700 font-bold" : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"}`}>
+    <Link to={to} onClick={onClose} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${active ? "bg-amber-50 text-amber-700 font-bold" : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"}`}>
       <Icon size={16} className={active ? "text-amber-600" : "text-zinc-400"} />
       {label}
     </Link>
   );
 };
 
-const AdminSidebar = () => (
+const AdminSidebar = ({ onClose }) => (
   <div className="w-64 h-screen overflow-y-auto bg-white border-r border-zinc-200 flex flex-col">
     {/* Logo */}
-    <div className="px-5 py-5 border-b border-zinc-100">
+    <div className="px-5 py-5 border-b border-zinc-100 flex items-center justify-between">
       <Link to="/" className="flex items-center gap-2.5">
         <div className="p-1.5 bg-zinc-900 rounded-lg shadow-sm">
           <img src="/bharatroots-logo.svg" alt="Logo" className="h-5 w-5 filter brightness-0 invert" onError={e => e.target.style.display = 'none'} />
         </div>
         <span className="text-lg font-black tracking-tight text-zinc-900 font-display">Bharat<span className="text-amber-600 font-normal">Roots</span></span>
       </Link>
-      <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">Admin Panel</span>
+      <button onClick={onClose} className="lg:hidden p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100">✕</button>
     </div>
 
     <nav className="flex-1 px-3 py-4 space-y-5">
       <div className="space-y-1">
-        {navItems.map(item => <NavLink key={item.to} {...item} />)}
+        {navItems.map(item => <NavLink key={item.to} {...item} onClose={onClose} />)}
       </div>
 
       <div>
         <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-3 mb-2">Admin Actions</p>
         <div className="space-y-1">
-          {adminItems.map(item => <NavLink key={item.to} {...item} />)}
+          {adminItems.map(item => <NavLink key={item.to} {...item} onClose={onClose} />)}
         </div>
       </div>
 
       <div>
         <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-3 mb-2">Explore</p>
         <div className="space-y-1">
-          {exploreItems.map(item => <NavLink key={item.to} {...item} />)}
+          {exploreItems.map(item => <NavLink key={item.to} {...item} onClose={onClose} />)}
         </div>
       </div>
     </nav>

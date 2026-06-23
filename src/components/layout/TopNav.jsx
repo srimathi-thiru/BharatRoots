@@ -6,7 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { MdSearch, MdMailOutline, MdNotificationsNone, MdLogout } from 'react-icons/md';
 import CartButton from '../CartButton';
 
-const TopNav = () => {
+const TopNav = ({ onMenuClick }) => {
   const { currentUser, userName, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -24,19 +24,30 @@ const TopNav = () => {
   }).format(new Date());
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-zinc-200 px-6 py-3 flex items-center justify-between sticky top-0 z-10 w-full h-[70px]">
+    <nav className="bg-white/80 backdrop-blur-md border-b border-zinc-200 px-4 lg:px-6 py-3 flex items-center justify-between sticky top-0 z-10 w-full h-[70px]">
       {/* Left part */}
-      <div className="flex flex-col">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden p-2 rounded-lg text-zinc-600 hover:bg-zinc-100 transition-colors"
+        >
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="2" y1="5" x2="18" y2="5" />
+            <line x1="2" y1="10" x2="18" y2="10" />
+            <line x1="2" y1="15" x2="18" y2="15" />
+          </svg>
+        </button>
+        <div className="flex flex-col">
         <h2 className="text-xl font-display text-zinc-800 hidden md:flex items-center gap-2">
            <span className="font-light text-zinc-500">Good Morning, </span> 
            <span className="font-bold">{userName || "User"}</span>
         </h2>
         <p className="text-xs text-zinc-400 font-medium hidden lg:block uppercase tracking-wider mt-0.5">Welcome back to your dashboard</p>
         
-        {/* Mobile menu toggle placeholder */}
-        <div className="md:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-2">
             <img src="/bharatroots-logo.svg" alt="BharatRoots Logo" className="h-6 w-6" onError={(e) => { e.target.style.display = 'none'; }} />
             <h1 className="text-xl font-bold font-display text-zinc-900">BharatRoots</h1>
+          </div>
         </div>
       </div>
 
