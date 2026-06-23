@@ -2,31 +2,28 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
-import { useNavigate, Link } from 'react-router-dom';
-import { MdSearch, MdMailOutline, MdNotificationsNone, MdLogout } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { MdSearch, MdNotificationsNone, MdLogout } from 'react-icons/md';
 import CartButton from '../CartButton';
 
 const TopNav = ({ onMenuClick }) => {
-  const { currentUser, userName, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { userName, logout } = useContext(AuthContext);
 
   const handleLogout = async () => {
     if (logout) {
       await logout();
     } else {
       await signOut(auth);
-      window.location.href = "/";
+      window.location.href = '/';
     }
   };
 
-  const today = new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit', month: '2-digit', year: 'numeric'
-  }).format(new Date());
-
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-zinc-200 px-4 lg:px-6 py-3 flex items-center justify-between sticky top-0 z-10 w-full h-[70px]">
-      {/* Left part */}
+    <nav className="bg-white border-b border-zinc-200 px-4 lg:px-6 sticky top-0 z-10 w-full h-[60px] flex items-center justify-between">
+
+      {/* LEFT — Hamburger + Logo */}
       <div className="flex items-center gap-3">
+        {/* Hamburger — mobile only */}
         <button
           onClick={onMenuClick}
           className="lg:hidden p-2 rounded-lg text-zinc-600 hover:bg-zinc-100 transition-colors"
@@ -37,61 +34,77 @@ const TopNav = ({ onMenuClick }) => {
             <line x1="2" y1="15" x2="18" y2="15" />
           </svg>
         </button>
-        <div className="flex flex-col">
-        <h2 className="text-xl font-display text-zinc-800 hidden md:flex items-center gap-2">
-           <span className="font-light text-zinc-500">Good Morning, </span> 
-           <span className="font-bold">{userName || "User"}</span>
-        </h2>
-        <p className="text-xs text-zinc-400 font-medium hidden lg:block uppercase tracking-wider mt-0.5">Welcome back to your dashboard</p>
-        
-          <div className="lg:hidden flex items-center gap-2">
-            <img src="/bharatroots-logo.svg" alt="BharatRoots Logo" className="h-6 w-6" onError={(e) => { e.target.style.display = 'none'; }} />
-            <h1 className="text-xl font-bold font-display text-zinc-900">BharatRoots</h1>
+
+        {/* Logo — mobile only */}
+        <Link to="/dashboard" className="lg:hidden flex items-center gap-2">
+          <div className="p-1 bg-zinc-900 rounded-md">
+            <img src="/bharatroots-logo.svg" alt="Logo" className="h-5 w-5 filter brightness-0 invert" onError={e => e.target.style.display = 'none'} />
           </div>
+          <span className="text-base font-black tracking-tight text-zinc-900 font-display">
+            Bharat<span className="text-amber-600 font-normal">Roots</span>
+          </span>
+        </Link>
+
+        {/* Greeting — desktop only */}
+        <div className="hidden lg:flex flex-col">
+          <h2 className="text-base font-display text-zinc-800 flex items-center gap-1">
+            <span className="font-light text-zinc-400">Good Morning,</span>
+            <span className="font-bold">{userName || 'User'}</span>
+          </h2>
+          <p className="text-[11px] text-zinc-400 uppercase tracking-wider">Welcome back to your dashboard</p>
         </div>
       </div>
 
-      {/* Right part */}
-      <div className="flex items-center space-x-4 md:space-x-6">
-        
-        {/* Search Input Link */}
-        <Link to="/search" className="hidden lg:flex items-center space-x-4 group cursor-pointer">
-            <div className="relative pointer-events-none">
-                <select className="appearance-none bg-[#FCFAFA] border border-zinc-200 text-zinc-600 text-sm rounded-lg group-hover:border-indigo-300 block w-full px-4 py-2 outline-none min-w-[140px] transition-all">
-                   <option>Global Search</option>
-                </select>
-            </div>
-            
-            <div className="flex items-center border border-zinc-200 bg-[#FCFAFA] rounded-lg px-4 py-2 shadow-sm group-hover:border-indigo-300 transition-all">
-                <MdSearch className="text-zinc-400 mr-2 group-hover:text-indigo-500 transition-colors" size={18} />
-                <span className="text-sm border-l border-zinc-200 pl-2 text-zinc-400 font-medium">Search artifacts...</span>
-            </div>
+      {/* RIGHT — Actions */}
+      <div className="flex items-center gap-1 sm:gap-2">
+
+        {/* Search — icon only on mobile, full bar on desktop */}
+        <Link
+          to="/search"
+          className="lg:hidden p-2 rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-indigo-600 transition-colors"
+        >
+          <MdSearch size={22} />
+        </Link>
+        <Link
+          to="/search"
+          className="hidden lg:flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-2 text-sm text-zinc-400 hover:border-indigo-300 hover:text-indigo-500 transition-all"
+        >
+          <MdSearch size={16} />
+          Search artifacts...
         </Link>
 
-        {/* Mobile Search Link */}
-        <Link to="/search" className="text-zinc-500 hover:text-indigo-600 lg:hidden transition-colors">
-            <MdSearch size={22} />
-        </Link>
-        <button className="text-zinc-500 hover:text-amber-600 relative transition-colors">
-            <MdMailOutline size={22} />
+        {/* Notifications */}
+        <button className="relative p-2 rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-amber-600 transition-colors">
+          <MdNotificationsNone size={22} />
+          <span className="absolute top-1.5 right-1.5 bg-red-500 w-2 h-2 rounded-full border-2 border-white"></span>
         </button>
-        <button className="text-zinc-500 hover:text-amber-600 relative transition-colors">
-            <MdNotificationsNone size={22} />
-            <span className="absolute top-0 right-0 bg-red-500 w-2 h-2 border-2 border-white rounded-full"></span>
-        </button>
-        
-        <div className="bg-[#FCFAFA] border border-zinc-100 rounded-full px-2 py-1 flex items-center">
-            <CartButton />
+
+        {/* Cart */}
+        <div className="p-1">
+          <CartButton />
         </div>
 
-        <div className="flex items-center gap-3 pl-3 border-l border-zinc-200">
-            <Link to="/profile" className="h-9 w-9 rounded-full bg-zinc-900 text-amber-400 hover:bg-zinc-800 flex items-center justify-center font-bold shadow-md transition-colors cursor-pointer" title="My Profile">
-                {(userName || "U")[0].toUpperCase()}
-            </Link>
-            <button onClick={handleLogout} className="text-zinc-400 hover:text-red-500 transition-colors" title="Logout">
-                <MdLogout size={22} />
-            </button>
-        </div>
+        {/* Divider */}
+        <div className="w-px h-6 bg-zinc-200 mx-1 hidden sm:block" />
+
+        {/* Profile avatar */}
+        <Link
+          to="/profile"
+          className="h-8 w-8 rounded-full bg-zinc-900 text-amber-400 hover:bg-zinc-700 flex items-center justify-center font-bold text-sm shadow transition-colors"
+          title="My Profile"
+        >
+          {(userName || 'U')[0].toUpperCase()}
+        </Link>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="p-2 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+          title="Logout"
+        >
+          <MdLogout size={20} />
+        </button>
+
       </div>
     </nav>
   );
