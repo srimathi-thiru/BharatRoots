@@ -9,7 +9,7 @@ const CartButton = () => {
   const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <Link to="/cart" className="relative text-white hover:text-indigo-400 transition flex items-center">
+    <Link to="/cart" className="relative text-zinc-500 hover:text-indigo-600 transition flex items-center">
       <FaShoppingCart size={24} />
       {itemCount > 0 && (
         <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center justify-center min-w-[18px]">
