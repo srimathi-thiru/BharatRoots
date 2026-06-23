@@ -88,7 +88,7 @@ function ProductDetail() {
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-black font-display text-zinc-900 mb-4 tracking-tight leading-tight">
+            <h1 className="text-3xl md:text-5xl font-black font-display text-zinc-900 mb-4 tracking-tight leading-tight">
               {product.name}
             </h1>
 

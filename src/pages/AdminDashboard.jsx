@@ -111,7 +111,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard label="Total Products" value={stats.products} sub="▲ Live Inventory" />
         <StatCard label="Total Orders" value={stats.orders} sub="● Lifetime Count" />
         <StatCard label="Total Artisans" value={stats.artisans} sub="★ Active Partners" />
@@ -119,15 +119,15 @@ const AdminDashboard = () => {
       </div>
 
       {/* Quick Admin Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { to: "/admin-artisans", icon: Users, label: "Manage Artisans", color: "bg-amber-50 border-amber-100 text-amber-700" },
           { to: "/verify", icon: ShieldCheck, label: "Verify Products", color: "bg-emerald-50 border-emerald-100 text-emerald-700" },
           { to: "/products", icon: Package, label: "All Products", color: "bg-indigo-50 border-indigo-100 text-indigo-700" },
           { to: "/heritage", icon: Compass, label: "Heritage Sites", color: "bg-zinc-50 border-zinc-200 text-zinc-700" },
         ].map(({ to, icon: Icon, label, color }) => (
-          <Link key={to} to={to} className={`flex items-center gap-3 p-4 rounded-xl border font-semibold text-sm transition-all hover:shadow-sm ${color}`}>
-            <Icon size={18} /> {label}
+          <Link key={to} to={to} className={`flex items-center gap-2 p-3 md:p-4 rounded-xl border font-semibold text-xs md:text-sm transition-all hover:shadow-sm ${color}`}>
+            <Icon size={16} /> {label}
           </Link>
         ))}
       </div>

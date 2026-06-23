@@ -34,14 +34,14 @@ const CartPage = () => {
 
   return (
     <PageWrapper className="py-8 px-4 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-black font-display tracking-tight text-zinc-900 mb-8">Shopping Cart</h1>
+      <h1 className="text-2xl md:text-4xl font-black font-display tracking-tight text-zinc-900 mb-6">Shopping Cart</h1>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-6">
         
         {/* CART ITEMS LIST */}
         <div className="lg:w-2/3 space-y-6">
           {cartItems.map((item) => (
-            <div key={item.id} className="bg-white p-6 rounded-3xl shadow-sm border border-zinc-200 flex flex-col sm:flex-row items-center gap-6 relative group hover:shadow-md transition-shadow">
+            <div key={item.id} className="bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-zinc-200 flex flex-col sm:flex-row items-center gap-4 relative group hover:shadow-md transition-shadow">
               <img src={item.imageUrl} alt={item.name} className="w-full sm:w-32 h-32 object-cover rounded-2xl bg-zinc-100" />
               
               <div className="flex-1 w-full text-center sm:text-left">
@@ -86,7 +86,7 @@ const CartPage = () => {
 
         {/* ORDER SUMMARY */}
         <div className="lg:w-1/3">
-          <div className="bg-[#FCFAFA] p-8 rounded-[2rem] shadow-sm border border-zinc-200 sticky top-8">
+          <div className="bg-[#FCFAFA] p-6 md:p-8 rounded-[2rem] shadow-sm border border-zinc-200 sticky top-8">
             <h2 className="text-2xl font-black font-display text-zinc-900 mb-8">Order Summary</h2>
             
             <div className="space-y-4 mb-8">

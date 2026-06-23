@@ -24,16 +24,16 @@ const HeroSection = () => {
             <span className="text-xs font-bold text-indigo-700 uppercase tracking-widest">The Swadeshi Marketplace & Archive</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-[1.1] text-slate-900 font-display">
+          <h1 className="text-4xl md:text-7xl font-bold mb-6 md:mb-8 leading-[1.1] text-slate-900 font-display">
             Authentic <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-amber-600">Indian Heritage</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed font-light">
+          <p className="text-base md:text-xl text-slate-600 mb-8 md:mb-10 leading-relaxed font-light">
             Discover real, verified masterpieces from master artisans across India. Preserving traditions through a next-generation digital storefront and living archive.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start">
+          <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-5 justify-center lg:justify-start">
             <Link 
               to="/products" 
               className="group relative px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold flex items-center gap-3 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-200"

@@ -94,7 +94,7 @@ function ProductList() {
         </h2>
         <p className="text-zinc-500 mb-10 text-lg">Discover authentic, verified heritage crafts directly from artisans.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {products.map(product => (
 
